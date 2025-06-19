@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 # Cargar variables de entorno
 load_dotenv()
 
+# Obtener el directorio base del proyecto (ml_backend)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 class Config:
     # Configuración general
     SECRET_KEY = os.environ.get('SECRET_KEY', 'mi_clave_secreta_por_defecto_cambiar_en_produccion')
@@ -20,12 +23,12 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
     
     # Directorios de subida de archivos
-    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
     IMAGE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'images')
     TABULAR_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'tabular')
     
     # Directorios para guardar modelos
-    MODELS_FOLDER = os.path.join(os.getcwd(), 'models')
+    MODELS_FOLDER = os.path.join(BASE_DIR, 'models')
     CNN_MODELS_FOLDER = os.path.join(MODELS_FOLDER, 'cnn')
     TABULAR_MODELS_FOLDER = os.path.join(MODELS_FOLDER, 'tabular')
     
@@ -35,8 +38,8 @@ class Config:
     ALLOWED_TABULAR_EXTENSIONS = {'csv', 'xlsx', 'xls'}
     
     # Datos de prueba
-    TEST_IMAGES_FOLDER = os.path.join(os.getcwd(), 'ml', 'cnn', 'test_data')
-    TEST_TABULAR_FOLDER = os.path.join(os.getcwd(), 'ml', 'tabular', 'test_data')
+    TEST_IMAGES_FOLDER = os.path.join(BASE_DIR, 'ml', 'cnn', 'test_data')
+    TEST_TABULAR_FOLDER = os.path.join(BASE_DIR, 'ml', 'tabular', 'test_data')
 
 class DevelopmentConfig(Config):
     DEBUG = True
