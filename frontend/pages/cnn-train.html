@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenar CNN - Sistema de Detección de Cáncer</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Barra lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-heartbeat"></i> SDC</h2>
+                <button class="sidebar-toggle">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar">
+                    <span id="user-initial"></span>
+                </div>
+                <div class="user-details">
+                    <h4 class="user-name" id="user-info">Usuario</h4>
+                    <p class="user-role" id="user-role">Rol</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <i class="fas fa-home"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item" data-role="Administrador">
+                        <a href="admin.html" class="nav-link">
+                            <i class="fas fa-users-cog"></i> Administración
+                        </a>
+                    </li>
+                    <li class="nav-item" data-role="Testing">
+                        <a href="cnn-train.html" class="nav-link active">
+                            <i class="fas fa-brain"></i> Entrenar CNN
+                        </a>
+                    </li>
+                    <li class="nav-item" data-role="Testing">
+                        <a href="cnn-predict.html" class="nav-link">
+                            <i class="fas fa-image"></i> Predecir CNN
+                        </a>
+                    </li>
+                    <li class="nav-item" data-role="Testing">
+                        <a href="tabular-train.html" class="nav-link">
+                            <i class="fas fa-table"></i> Entrenar Tabular
+                        </a>
+                    </li>
+                    <li class="nav-item" data-role="Testing">
+                        <a href="tabular-predict.html" class="nav-link">
+                            <i class="fas fa-chart-bar"></i> Predecir Tabular
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logout-button" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <header class="content-header">
+                <button class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Entrenar Modelo CNN con Datos de Prueba</h1>
+            </header>
+            
+            <div class="content-container">
+                <!-- Contenedor de alertas -->
+                <div id="alerts-container"></div>
+                
+                <!-- Formulario de entrenamiento CNN -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2 class="dashboard-card-title">
+                            <i class="fas fa-brain"></i> Configuración del Modelo CNN
+                        </h2>
+                    </div>
+                    
+                    <div class="card-body">
+                        <p>Configure los parámetros para entrenar un modelo de Redes Neuronales Convolucionales (CNN) con datos de prueba generados automáticamente.</p>
+                        
+                        <form id="cnn-train-form" class="mt-3">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="model-name">Nombre del modelo</label>
+                                        <input type="text" id="model-name" name="model_name" placeholder="mi_modelo_cnn" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="architecture">Arquitectura</label>
+                                        <select id="architecture" name="architecture">
+                                            <option value="custom">Personalizada</option>
+                                            <option value="mobilenet">MobileNetV2</option>
+                                            <option value="vgg16">VGG16</option>
+                                            <option value="resnet50">ResNet50</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="num-classes">Número de clases</label>
+                                        <input type="number" id="num-classes" name="num_classes" min="2" value="2" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="num-samples">Muestras de prueba</label>
+                                        <input type="number" id="num-samples" name="num_samples" min="50" value="100" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="test-size">Proporción de test</label>
+                                        <input type="number" id="test-size" name="test_size" min="0.1" max="0.5" step="0.05" value="0.2" required>
+                                        <small class="text-muted">Proporción de datos usados para validación (0.1 - 0.5)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="learning-rate">Learning Rate</label>
+                                        <input type="number" id="learning-rate" name="learning_rate" min="0.0001" max="0.1" step="0.0001" value="0.001" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="dropout-rate">Dropout Rate</label>
+                                        <input type="number" id="dropout-rate" name="dropout_rate" min="0" max="0.9" step="0.1" value="0.5" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="epochs">Épocas</label>
+                                        <input type="number" id="epochs" name="epochs" min="1" max="100" value="10" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row" id="custom-arch-options">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="input-height">Altura de imagen</label>
+                                        <input type="number" id="input-height" name="input_height" min="32" max="512" value="224" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="input-width">Anchura de imagen</label>
+                                        <input type="number" id="input-width" name="input_width" min="32" max="512" value="224" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="filters">Filtros</label>
+                                        <input type="text" id="filters" name="filters" value="[32, 64, 128]" required>
+                                        <small class="text-muted">Array de filtros para cada capa convolucional</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" id="data-augmentation" name="data_augmentation" checked>
+                                    <label for="data-augmentation">Usar aumento de datos</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-play"></i> Entrenar Modelo
+                                    <span class="btn-loader"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Resultados del entrenamiento -->
+                <div id="training-results" class="dashboard-card mt-4" style="display: none;">
+                    <div class="card-header">
+                        <h2 class="dashboard-card-title">
+                            <i class="fas fa-chart-line"></i> Resultados del Entrenamiento
+                        </h2>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div id="results-content"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/cnn-train.js"></script>
+    <script>
+        // Proteger esta página, solo para usuarios con rol Testing
+        handleProtectedPage(['Testing']);
+    </script>
+</body>
+</html>
