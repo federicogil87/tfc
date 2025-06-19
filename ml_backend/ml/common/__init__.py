@@ -1,1 +1,0 @@
-# Este archivo permite que el directorio common sea reconocido como un paquete de Python
