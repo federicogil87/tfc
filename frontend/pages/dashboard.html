@@ -1,191 +1,265 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sistema de Detección de Cáncer</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard de Modelos - Sistema de Detección de Cáncer</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  </head>
+  <body>
     <div class="dashboard-container">
-        <!-- Barra lateral -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2><i class="fas fa-heartbeat"></i> SDC</h2>
-                <button class="sidebar-toggle">
-                    <i class="fas fa-times"></i>
-                </button>
+      <!-- Barra lateral -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2><i class="fas fa-heartbeat"></i> SDC</h2>
+          <button class="sidebar-toggle">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="user-info">
+          <div class="user-avatar">
+            <span id="user-initial"></span>
+          </div>
+          <div class="user-details">
+            <h4 class="user-name" id="user-info">Usuario</h4>
+            <p class="user-role" id="user-role">Rol</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="nav-item">
+              <a href="home.html" class="nav-link">
+                <i class="fas fa-home"></i> Inicio
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="dashboard.html" class="nav-link active">
+                <i class="fas fa-chart-line"></i> Dashboard
+              </a>
+            </li>
+            <li class="nav-item" data-role="Administrador">
+              <a href="admin.html" class="nav-link">
+                <i class="fas fa-users-cog"></i> Administración
+              </a>
+            </li>
+            <li class="nav-item" data-role="Testing">
+              <a href="cnn-train.html" class="nav-link">
+                <i class="fas fa-brain"></i> Entrenar CNN
+              </a>
+            </li>
+            <li class="nav-item" data-role="Testing">
+              <a href="cnn-predict.html" class="nav-link">
+                <i class="fas fa-image"></i> Predecir CNN
+              </a>
+            </li>
+            <li class="nav-item" data-role="Testing">
+              <a href="tabular-train.html" class="nav-link">
+                <i class="fas fa-table"></i> Entrenar Tabular
+              </a>
+            </li>
+            <li class="nav-item" data-role="Testing">
+              <a href="tabular-predict.html" class="nav-link">
+                <i class="fas fa-chart-bar"></i> Predecir Tabular
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button id="logout-button" class="logout-button">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+          </button>
+        </div>
+      </aside>
+
+      <!-- Contenido principal -->
+      <main class="main-content">
+        <header class="content-header">
+          <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="page-title">Dashboard de Modelos</h1>
+        </header>
+
+        <div class="content-container">
+          <!-- Contenedor de alertas -->
+          <div id="alerts-container"></div>
+
+          <!-- Resumen de modelos -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h2 class="dashboard-card-title">
+                <i class="fas fa-chart-pie"></i> Resumen de Modelos
+              </h2>
             </div>
-            
-            <div class="user-info">
-                <div class="user-avatar">
-                    <span id="user-initial"></span>
+
+            <div class="card-body">
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-icon">
+                    <i class="fas fa-brain"></i>
+                  </div>
+                  <div class="stat-info">
+                    <h3 id="total-cnn-models">0</h3>
+                    <p>Modelos CNN</p>
+                  </div>
                 </div>
-                <div class="user-details">
-                    <h4 class="user-name" id="user-info">Usuario</h4>
-                    <p class="user-role" id="user-role">Rol</p>
+                <div class="stat-card">
+                  <div class="stat-icon">
+                    <i class="fas fa-table"></i>
+                  </div>
+                  <div class="stat-info">
+                    <h3 id="total-tabular-models">0</h3>
+                    <p>Modelos Tabulares</p>
+                  </div>
                 </div>
+                <div class="stat-card">
+                  <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                  </div>
+                  <div class="stat-info">
+                    <h3 id="best-accuracy">0%</h3>
+                    <p>Mejor Precisión</p>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                  </div>
+                  <div class="stat-info">
+                    <h3 id="models-this-month">0</h3>
+                    <p>Modelos este mes</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="nav-item">
-                        <a href="dashboard.html" class="nav-link active">
-                            <i class="fas fa-home"></i> Inicio
-                        </a>
-                    </li>
-                    <li class="nav-item" data-role="Administrador">
-                        <a href="admin.html" class="nav-link">
-                            <i class="fas fa-users-cog"></i> Administración
-                        </a>
-                    </li>
-                    <li class="nav-item" data-role="Testing">
-                        <a href="cnn-train.html" class="nav-link">
-                            <i class="fas fa-brain"></i> Entrenar CNN
-                        </a>
-                    </li>
-                    <li class="nav-item" data-role="Testing">
-                        <a href="cnn-predict.html" class="nav-link">
-                            <i class="fas fa-image"></i> Predecir CNN
-                        </a>
-                    </li>
-                    <li class="nav-item" data-role="Testing">
-                        <a href="tabular-train.html" class="nav-link">
-                            <i class="fas fa-table"></i> Entrenar Tabular
-                        </a>
-                    </li>
-                    <li class="nav-item" data-role="Testing">
-                        <a href="tabular-predict.html" class="nav-link">
-                            <i class="fas fa-chart-bar"></i> Predecir Tabular
-                        </a>
-                    </li>
-					<li class="nav-item">
-						<a href="dashboard-overview.html" class="nav-link">
-							<i class="fas fa-chart-line"></i> Dashboard
-						</a>
-					</li>
-                </ul>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <button id="logout-button" class="logout-button">
-                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-                </button>
+          </div>
+
+          <!-- Comparación de modelos CNN -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h2 class="dashboard-card-title">
+                <i class="fas fa-brain"></i> Comparación de Modelos CNN
+              </h2>
             </div>
-        </aside>
-        
-        <!-- Contenido principal -->
-        <main class="main-content">
-            <header class="content-header">
-                <button class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 class="page-title">Inicio</h1>
-            </header>
-            
-            <div class="content-container">
-                <!-- Mensaje de bienvenida -->
-                <div class="welcome-message">
-                    <h1>Bienvenido <span id="welcome-name"></span> al Sistema de Detección de Cáncer</h1>
-                    <p>Esta plataforma te permite entrenar y utilizar modelos de Machine Learning y Deep Learning para la detección de cáncer.</p>
-                </div>
-                
-                <!-- Tarjetas de funcionalidades -->
-                <div class="welcome-cards">
-                    <div class="welcome-card" data-role="Administrador">
-                        <i class="fas fa-users-cog"></i>
-                        <h3>Administración</h3>
-                        <p>Gestiona usuarios y permisos del sistema.</p>
-                        <a href="admin.html" class="btn btn-primary">Acceder</a>
-                    </div>
-					
-                    <div class="welcome-card" data-role="Testing">
-                        <i class="fas fa-brain"></i>
-                        <h3>Entrenar CNN</h3>
-                        <p>Entrena modelos CNN con imágenes de prueba.</p>
-                        <a href="cnn-train.html" class="btn btn-primary">Acceder</a>
-                    </div>
-                    
-                    <div class="welcome-card" data-role="Testing">
-                        <i class="fas fa-image"></i>
-                        <h3>Predecir CNN</h3>
-                        <p>Realiza predicciones con modelos CNN entrenados.</p>
-                        <a href="cnn-predict.html" class="btn btn-primary">Acceder</a>
-                    </div>
-                    
-                    <div class="welcome-card" data-role="Testing">
-                        <i class="fas fa-table"></i>
-                        <h3>Entrenar Tabular</h3>
-                        <p>Entrena modelos tabulares con datos de prueba.</p>
-                        <a href="tabular-train.html" class="btn btn-primary">Acceder</a>
-                    </div>
-                    
-                    <div class="welcome-card" data-role="Testing">
-                        <i class="fas fa-chart-bar"></i>
-                        <h3>Predecir Tabular</h3>
-                        <p>Realiza predicciones con modelos tabulares.</p>
-                        <a href="tabular-predict.html" class="btn btn-primary">Acceder</a>
-                    </div>
-					
-					<div class="welcome-card">
-						<i class="fas fa-chart-line"></i>
-						<h3>Dashboard</h3>
-						<p>Visualiza y compara el rendimiento de tus modelos.</p>
-						<a href="dashboard-overview.html" class="btn btn-primary">Acceder</a>
-					</div>
-                </div>
-                
-                <!-- Mensaje de acceso denegado (se muestra con JS cuando corresponda) -->
-                <div id="access-denied" class="access-denied" style="display: none;">
-                    <i class="fas fa-lock"></i>
-                    <h2>Acceso Denegado</h2>
-                    <p>No tienes los permisos necesarios para acceder a esta sección.</p>
-                    <a href="dashboard.html" class="btn btn-primary">Volver al inicio</a>
-                </div>
+
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="cnn-comparison-chart"></canvas>
+              </div>
+              <div
+                id="cnn-no-data"
+                class="no-data-message"
+                style="display: none"
+              >
+                <p>No hay modelos CNN disponibles para comparar.</p>
+                <a href="cnn-train.html" class="btn btn-primary"
+                  >Entrenar Modelo CNN</a
+                >
+              </div>
             </div>
-        </main>
+          </div>
+
+          <!-- Comparación de modelos tabulares -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h2 class="dashboard-card-title">
+                <i class="fas fa-table"></i> Comparación de Modelos Tabulares
+              </h2>
+            </div>
+
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="tabular-comparison-chart"></canvas>
+              </div>
+              <div
+                id="tabular-no-data"
+                class="no-data-message"
+                style="display: none"
+              >
+                <p>No hay modelos tabulares disponibles para comparar.</p>
+                <a href="tabular-train.html" class="btn btn-primary"
+                  >Entrenar Modelo Tabular</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Rendimiento por tipo de modelo -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h2 class="dashboard-card-title">
+                <i class="fas fa-chart-bar"></i> Rendimiento por Tipo de Modelo
+              </h2>
+            </div>
+
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="model-type-chart"></canvas>
+              </div>
+              <div
+                id="type-no-data"
+                class="no-data-message"
+                style="display: none"
+              >
+                <p>No hay suficientes datos para comparar tipos de modelos.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modelos recientes -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h2 class="dashboard-card-title">
+                <i class="fas fa-history"></i> Modelos Recientes
+              </h2>
+            </div>
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Tipo</th>
+                      <th>Precisión</th>
+                      <th>Fecha</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recent-models-table">
+                    <!-- Aquí se cargarán los modelos recientes -->
+                  </tbody>
+                </table>
+              </div>
+              <div
+                id="recent-no-data"
+                class="no-data-message"
+                style="display: none"
+              >
+                <p>No hay modelos recientes para mostrar.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/dashboard.js"></script>
+    <script src="../js/dashboard-overview.js"></script>
     <script>
-        // Proteger esta página sin requerir roles específicos (todos pueden acceder)
-        handleProtectedPage();
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mostrar mensaje de acceso denegado si corresponde
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('access') === 'denied') {
-                document.getElementById('access-denied').style.display = 'block';
-                document.querySelector('.welcome-message').style.display = 'none';
-                document.querySelector('.welcome-cards').style.display = 'none';
-            }
-            
-            // Mostrar información del usuario
-            const user = getCurrentUser();
-            if (user) {
-                // Nombre en el mensaje de bienvenida
-                const welcomeNameElement = document.getElementById('welcome-name');
-                if (welcomeNameElement) {
-                    welcomeNameElement.textContent = user.username;
-                }
-                
-                // Inicial del avatar
-                const userInitialElement = document.getElementById('user-initial');
-                if (userInitialElement && user.username) {
-                    userInitialElement.textContent = user.username.charAt(0).toUpperCase();
-                }
-                
-                // Rol del usuario
-                const userRoleElement = document.getElementById('user-role');
-                if (userRoleElement && user.roles && user.roles.length > 0) {
-                    userRoleElement.textContent = user.roles.join(', ');
-                }
-            }
-        });
+      // Proteger esta página sin requerir roles específicos (todos pueden acceder)
+      handleProtectedPage();
     </script>
-</body>
+  </body>
 </html>

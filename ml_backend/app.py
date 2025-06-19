@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, redirect, send_from_directory, request
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
@@ -21,7 +21,7 @@ def create_app(config=None):
         Aplicación Flask configurada
     """
     # Crear la aplicación Flask
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../frontend')
     
     # Cargar configuración
     if config is None:
@@ -51,20 +51,35 @@ def create_app(config=None):
     app.register_blueprint(auth_bp)
     app.register_blueprint(cnn_bp)
     app.register_blueprint(tabular_bp)
-    app.register_blueprint(dashboard_bp) 
+    app.register_blueprint(dashboard_bp)
     
-    # Ruta de prueba
+    # Ruta raíz redirige al frontend
     @app.route('/', methods=['GET'])
     def index():
+        return redirect('/index.html')
+    
+    # Servir archivos estáticos del frontend
+    @app.route('/<path:path>')
+    def serve_frontend(path):
+        return send_from_directory('../frontend', path)
+    
+    # Ruta de API para verificar el estado
+    @app.route('/api/status', methods=['GET'])
+    def api_status():
         return jsonify({
             'message': 'API de ML Backend',
-            'version': '1.0.0'
+            'version': '1.0.0',
+            'status': 'operational'
         })
     
     # Manejador de errores 404
     @app.errorhandler(404)
     def not_found(error):
-        return jsonify({'error': 'Ruta no encontrada'}), 404
+        # Si la URL comienza con /api, devolver JSON
+        if request.path.startswith('/api'):
+            return jsonify({'error': 'Ruta no encontrada'}), 404
+        # Para otras URLs, redirigir al frontend
+        return redirect('/index.html')
     
     # Manejador de errores 500
     @app.errorhandler(500)
