@@ -336,3 +336,184 @@ async function deleteTabularModel(modelName) {
 async function getDashboardStats() {
   return apiRequest("/api/dashboard/stats");
 }
+
+/**
+ * Funciones para agregar al archivo api.js existente
+ * Añadir estas funciones al final del archivo api.js
+ */
+
+/**
+ * Entrena un modelo CNN con datos reales
+ *
+ * @param {FormData} formData - Datos para el entrenamiento, incluyendo el archivo ZIP
+ * @returns {Promise<Object>} - Respuesta con el modelo entrenado
+ */
+async function trainCnnWithRealData(formData) {
+  try {
+    // Obtener token
+    const token = localStorage.getItem("accessToken");
+
+    // Enviar solicitud a la API
+    const response = await fetch(`${API_BASE_URL}/api/ml/cnn/train/real`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    // Verificar respuesta
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error al entrenar modelo");
+    }
+
+    // Devolver datos de respuesta
+    return await response.json();
+  } catch (error) {
+    console.error("Error en trainCnnWithRealData:", error);
+    throw error;
+  }
+}
+
+/**
+ * Predice con un modelo CNN usando datos reales
+ *
+ * @param {FormData} formData - Datos para la predicción, incluyendo la imagen
+ * @returns {Promise<Object>} - Respuesta con la predicción
+ */
+async function predictCnnWithRealData(formData) {
+  try {
+    // Obtener token
+    const token = localStorage.getItem("accessToken");
+
+    // Enviar solicitud a la API
+    const response = await fetch(`${API_BASE_URL}/api/ml/cnn/predict/real`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    // Verificar respuesta
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error al realizar predicción");
+    }
+
+    // Devolver datos de respuesta
+    return await response.json();
+  } catch (error) {
+    console.error("Error en predictCnnWithRealData:", error);
+    throw error;
+  }
+}
+
+/**
+ * Realiza la solicitud para obtener una vista previa de un archivo tabular
+ *
+ * @param {FormData} formData - Datos del formulario con el archivo
+ * @returns {Promise<Object>} - Respuesta de la API
+ */
+async function previewTabularFile(formData) {
+  try {
+    // Obtener token
+    const token = localStorage.getItem("accessToken");
+
+    // Enviar solicitud a la API
+    const response = await fetch(`${API_BASE_URL}/api/ml/tabular/preview`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    // Verificar respuesta
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.error || "Error al obtener vista previa del archivo"
+      );
+    }
+
+    // Devolver datos de respuesta
+    return await response.json();
+  } catch (error) {
+    console.error("Error en previewTabularFile:", error);
+    throw error;
+  }
+}
+
+/**
+ * Entrena un modelo tabular con datos reales
+ *
+ * @param {FormData} formData - Datos para el entrenamiento, incluyendo el archivo
+ * @returns {Promise<Object>} - Respuesta con el modelo entrenado
+ */
+async function trainTabularWithRealData(formData) {
+  try {
+    // Obtener token
+    const token = localStorage.getItem("accessToken");
+
+    // Enviar solicitud a la API
+    const response = await fetch(`${API_BASE_URL}/api/ml/tabular/train/real`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    // Verificar respuesta
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error al entrenar modelo");
+    }
+
+    // Devolver datos de respuesta
+    return await response.json();
+  } catch (error) {
+    console.error("Error en trainTabularWithRealData:", error);
+    throw error;
+  }
+}
+
+/**
+ * Predice con un modelo tabular usando datos reales
+ *
+ * @param {Object} predictionData - Datos para la predicción
+ * @returns {Promise<Object>} - Respuesta con la predicción
+ */
+async function predictTabularWithRealData(predictionData) {
+  try {
+    // Obtener token
+    const token = localStorage.getItem("accessToken");
+
+    // Enviar solicitud a la API
+    const response = await fetch(
+      `${API_BASE_URL}/api/ml/tabular/predict/real`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(predictionData),
+      }
+    );
+
+    // Verificar respuesta
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error al realizar predicción");
+    }
+
+    // Devolver datos de respuesta
+    return await response.json();
+  } catch (error) {
+    console.error("Error en predictTabularWithRealData:", error);
+    throw error;
+  }
+}
