@@ -686,6 +686,9 @@ async function deleteModel(modelType, modelName) {
       await deleteTabularModel(modelName);
     }
 
+    // Cerrar el modal de confirmación
+    closeModal("confirm-modal");
+
     // Mostrar mensaje de éxito
     showAlert(
       `Modelo ${modelType} eliminado correctamente.`,
@@ -701,6 +704,10 @@ async function deleteModel(modelType, modelName) {
     }
   } catch (error) {
     console.error(`Error al eliminar modelo ${modelType}:`, error);
+
+    // Cerrar el modal de confirmación
+    closeModal("confirm-modal");
+
     showAlert(
       `Error al eliminar modelo: ${error.message}`,
       "danger",
