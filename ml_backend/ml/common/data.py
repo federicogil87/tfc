@@ -162,7 +162,7 @@ def prepare_image_data(image_paths, img_height, img_width, labels=None):
     if labels is not None:
         return X, np.array(labels)
     
-    return X
+    return X, None
 
 def create_image_data_generator(
     rotation_range=20, 
