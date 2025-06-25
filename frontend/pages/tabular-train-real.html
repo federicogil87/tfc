@@ -179,6 +179,7 @@
                 </div>
               </div>
 
+              <!-- Selección de Columnas -->
               <div class="column-selection mt-4">
                 <h3>Selección de Columnas</h3>
                 <div class="form-group">
@@ -193,10 +194,38 @@
                   </small>
                 </div>
 
+                <!-- Columnas de Características (multiselect) -->
                 <div class="form-group">
-                  <label>Columnas de Características</label>
-                  <div id="feature-columns" class="feature-columns-container">
-                    <!-- Checkboxes para las columnas de características -->
+                  <label for="feature-columns"
+                    >Columnas de Características
+                    <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Para seleccionar varias columnas, mantener apretado el boton Ctrl y hacer click en cada caracteristica</span
+                              >
+                            </span>
+                    </label
+                  >
+                  <div class="multiselect-wrapper">
+                    <select id="feature-columns" name="features" multiple>
+                      <!-- Aquí se cargarán las opciones de columnas -->
+                    </select>
+                    <div class="multiselect-actions">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        id="select-all-features"
+                      >
+                        Seleccionar Todas
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        id="deselect-all-features"
+                      >
+                        Deseleccionar Todas
+                      </button>
+                    </div>
                   </div>
                   <small class="text-muted">
                     Seleccione las columnas que desea utilizar como
@@ -204,17 +233,29 @@
                   </small>
                 </div>
 
-                <div class="form-group">
-                  <label>Columnas Categóricas</label>
-                  <div
-                    id="categorical-columns"
-                    class="feature-columns-container"
-                  >
-                    <!-- Checkboxes para las columnas categóricas -->
+                  <!-- Columnas Categóricas (multiselect) -->
+                  <div class="form-group">
+                    <label for="categorical-columns">Columnas Categóricas
+                      <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Para seleccionar varias columnas, mantener apretado el boton Ctrl y hacer click en cada caracteristica</span
+                              >
+                            </span>
+                    </label>
+                    <div class="multiselect-wrapper">
+                      <select id="categorical-columns" name="categorical_columns" multiple>
+                        <!-- Aquí se cargarán las opciones de columnas -->
+                      </select>
+                      <div class="multiselect-actions">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="select-all-categorical">Seleccionar Todas</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="deselect-all-categorical">Deseleccionar Todas</button>
+                      </div>
+                    </div>
+                    <small class="text-muted">
+                      Seleccione las columnas que contienen datos categóricos (texto, categorías, etc.).
+                    </small>
                   </div>
-                  <small class="text-muted">
-                    Seleccione las columnas que son categóricas (no numéricas).
-                  </small>
                 </div>
               </div>
             </div>

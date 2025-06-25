@@ -458,12 +458,11 @@ function setupTrainingForm() {
       }
 
       // Obtener columnas de características seleccionadas
-      const featureColumns = [];
-      document
-        .querySelectorAll('input[name="feature-columns"]:checked')
-        .forEach(checkbox => {
-          featureColumns.push(checkbox.value);
-        });
+      const featureColumns = Array.from(
+        document.getElementById("feature-columns").selectedOptions
+      ).map(option => option.value);
+      formData.delete("features"); // Eliminar cualquier valor previo
+      featureColumns.forEach(feature => formData.append("features", feature));
 
       if (featureColumns.length === 0) {
         showAlert(
@@ -475,12 +474,13 @@ function setupTrainingForm() {
       }
 
       // Obtener columnas categóricas seleccionadas
-      const categoricalColumns = [];
-      document
-        .querySelectorAll('input[name="categorical-columns"]:checked')
-        .forEach(checkbox => {
-          categoricalColumns.push(checkbox.value);
-        });
+      const categoricalColumns = Array.from(
+        document.getElementById("categorical-columns").selectedOptions
+      ).map(option => option.value);
+      formData.delete("categorical_columns"); // Eliminar cualquier valor previo
+      categoricalColumns.forEach(cat =>
+        formData.append("categorical_columns", cat)
+      );
 
       // Actualizar campos ocultos
       document.getElementById("target-column-hidden").value = targetColumn;
@@ -966,4 +966,94 @@ function setupUserInfo() {
       userRoleElement.textContent = user.roles.join(", ");
     }
   }
+}
+
+/**
+ * Configura selección de columnas
+ *
+ * @param {Array} columns - Lista de columnas disponibles
+ */
+function setupColumnSelection(columns) {
+  const targetSelect = document.getElementById("target-column");
+  const featureSelect = document.getElementById("feature-columns");
+  const categoricalSelect = document.getElementById("categorical-columns");
+
+  // Limpiar selects
+  targetSelect.innerHTML =
+    '<option value="">-- Seleccione la columna objetivo --</option>';
+  featureSelect.innerHTML = "";
+  categoricalSelect.innerHTML = "";
+
+  // Llenar opciones para todos los selects
+  columns.forEach(column => {
+    // Columna objetivo
+    const targetOption = document.createElement("option");
+    targetOption.value = column;
+    targetOption.textContent = column;
+    targetSelect.appendChild(targetOption);
+
+    // Columnas de características
+    const featureOption = document.createElement("option");
+    featureOption.value = column;
+    featureOption.textContent = column;
+    featureSelect.appendChild(featureOption);
+
+    // Columnas categóricas
+    const categoricalOption = document.createElement("option");
+    categoricalOption.value = column;
+    categoricalOption.textContent = column;
+    categoricalSelect.appendChild(categoricalOption);
+  });
+
+  // Por defecto, seleccionar todas las columnas como características (excepto la objetivo)
+  targetSelect.addEventListener("change", function () {
+    const targetColumn = this.value;
+
+    // Deseleccionar la columna objetivo de las características
+    Array.from(featureSelect.options).forEach(option => {
+      if (option.value === targetColumn) {
+        option.selected = false;
+      } else {
+        option.selected = true;
+      }
+    });
+  });
+
+  // Configurar botones de selección para características
+  document
+    .getElementById("select-all-features")
+    .addEventListener("click", function () {
+      const targetColumn = targetSelect.value;
+      Array.from(featureSelect.options).forEach(option => {
+        option.selected = option.value !== targetColumn;
+      });
+    });
+
+  document
+    .getElementById("deselect-all-features")
+    .addEventListener("click", function () {
+      Array.from(featureSelect.options).forEach(option => {
+        option.selected = false;
+      });
+    });
+
+  // Configurar botones de selección para columnas categóricas
+  document
+    .getElementById("select-all-categorical")
+    .addEventListener("click", function () {
+      Array.from(categoricalSelect.options).forEach(option => {
+        option.selected = true;
+      });
+    });
+
+  document
+    .getElementById("deselect-all-categorical")
+    .addEventListener("click", function () {
+      Array.from(categoricalSelect.options).forEach(option => {
+        option.selected = false;
+      });
+    });
+
+  // También actualiza la lógica del formulario de entrenamiento para recoger los valores de estos multi-selects
+  setupTrainingForm();
 }

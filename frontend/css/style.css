@@ -515,3 +515,54 @@ tr:hover {
   visibility: visible;
   opacity: 1;
 }
+
+/* Estilos para los selectores múltiples */
+.multiselect-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.multiselect-wrapper select[multiple] {
+  width: 100%;
+  min-height: 120px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--medium-light);
+  padding: 5px;
+  background-color: var(--white);
+}
+
+.multiselect-wrapper select[multiple] option {
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: var(--font-size-sm);
+}
+
+.multiselect-wrapper select[multiple] option:hover {
+  background-color: var(--light);
+}
+
+.multiselect-wrapper select[multiple] option:checked {
+  background-color: var(--primary-color-light);
+  color: var(--dark);
+}
+
+.multiselect-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.multiselect-actions button {
+  flex: 1;
+  margin: 0 3px;
+  font-size: var(--font-size-xs);
+  padding: 4px 8px;
+}
+
+.multiselect-actions button:first-child {
+  margin-left: 0;
+}
+
+.multiselect-actions button:last-child {
+  margin-right: 0;
+}
