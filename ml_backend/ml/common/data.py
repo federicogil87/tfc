@@ -2,9 +2,20 @@ import os
 import numpy as np
 import pandas as pd
 import zipfile
-import random
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
+try:
+    # Intenta importar según la versión más reciente
+    from keras.utils import load_img, img_to_array
+    from keras.preprocessing.image import ImageDataGenerator
+except ImportError:
+    try:
+        # Intenta importar según versiones intermedias
+        from tensorflow.keras.utils import load_img, img_to_array
+        from tensorflow.keras.preprocessing.image import ImageDataGenerator
+    except ImportError:
+        # Usa la importación para versiones antiguas
+        from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
+
 
 def split_data(X, y, test_size=0.2, random_state=None):
     """

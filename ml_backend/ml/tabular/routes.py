@@ -1,5 +1,4 @@
 import os
-import io
 import uuid
 import json
 import numpy as np
@@ -643,6 +642,43 @@ def preview_tabular_data():
         
     except Exception as e:
         logging.exception(f"Error al generar vista previa de datos tabulares: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Ruta para eliminar un modelo tabular específico
+@tabular_bp.route('/models/<model_name>', methods=['DELETE'])
+@jwt_required()
+@admin_required
+def delete_tabular_model(model_name):
+    """Endpoint para eliminar un modelo tabular específico (solo administradores)"""
+    try:
+        # Listar modelos disponibles
+        models = list_models(current_app.config['TABULAR_MODELS_FOLDER'])
+        
+        # Buscar el modelo por nombre
+        model_info = next((m for m in models if m['id'].startswith(model_name)), None)
+        if not model_info:
+            return jsonify({"error": f"Modelo '{model_name}' no encontrado"}), 404
+        
+        # Eliminar el modelo
+        model_path = model_info['path']
+        result = delete_model(model_path)
+        
+        if result:
+            return jsonify({
+                'success': True,
+                'message': f"Modelo '{model_name}' eliminado correctamente"
+            }), 200
+        else:
+            return jsonify({
+                'success': False,
+                'error': f"Error al eliminar el modelo '{model_name}'"
+            }), 500
+    
+    except Exception as e:
+        logger.exception(f"Error al eliminar modelo tabular: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
