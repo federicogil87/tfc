@@ -156,7 +156,15 @@
                 <div class="row">
                   <div class="col">
                     <div class="form-group">
-                      <label for="model-name">Nombre del modelo</label>
+                      <label for="model-name"
+                        >Nombre del modelo
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Identificador único para el modelo entrenado.</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="text"
                         id="model-name"
@@ -168,7 +176,17 @@
                   </div>
                   <div class="col">
                     <div class="form-group">
-                      <label for="architecture">Arquitectura</label>
+                      <label for="architecture"
+                        >Arquitectura
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Estructura general de la red neuronal. Las redes
+                            preentrenadas como MobileNet pueden ser más
+                            eficientes para ciertos casos.</span
+                          >
+                        </span>
+                      </label>
                       <select id="architecture" name="architecture">
                         <option value="custom">Personalizada</option>
                         <option value="mobilenet">MobileNetV2</option>
@@ -182,7 +200,16 @@
                 <div class="row">
                   <div class="col">
                     <div class="form-group">
-                      <label for="num-classes">Número de clases</label>
+                      <label for="num-classes"
+                        >Número de clases
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Cantidad de categorías diferentes que el modelo
+                            puede identificar.</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="number"
                         id="num-classes"
@@ -195,7 +222,17 @@
                   </div>
                   <div class="col">
                     <div class="form-group">
-                      <label for="test-size">Proporción de test</label>
+                      <label for="test-size"
+                        >Proporción de test
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Porcentaje de datos reservados para evaluar el
+                            modelo. Típicamente entre 0.1 (10%) y 0.3
+                            (30%).</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="number"
                         id="test-size"
@@ -216,7 +253,17 @@
                 <div class="row">
                   <div class="col">
                     <div class="form-group">
-                      <label for="learning-rate">Learning Rate</label>
+                      <label for="learning-rate"
+                        >Learning Rate
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Controla cuánto se ajustan los pesos en cada
+                            iteración. Valores menores son más estables pero más
+                            lentos.</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="number"
                         id="learning-rate"
@@ -231,7 +278,16 @@
                   </div>
                   <div class="col">
                     <div class="form-group">
-                      <label for="dropout-rate">Dropout Rate</label>
+                      <label for="dropout-rate"
+                        >Dropout Rate
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Técnica de regularización que previene el
+                            sobreajuste. Valores típicos: 0.2-0.5.</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="number"
                         id="dropout-rate"
@@ -246,7 +302,17 @@
                   </div>
                   <div class="col">
                     <div class="form-group">
-                      <label for="epochs">Épocas</label>
+                      <label for="epochs"
+                        >Épocas
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Número de veces que el modelo ve todo el conjunto
+                            de datos. Más épocas pueden mejorar el rendimiento
+                            hasta cierto punto.</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="number"
                         id="epochs"
@@ -291,7 +357,17 @@
                   </div>
                   <div class="col">
                     <div class="form-group">
-                      <label for="filters">Filtros</label>
+                      <label for="filters"
+                        >Filtros
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Número de filtros convolucionales en cada capa.
+                            Mayor cantidad detecta más características pero
+                            aumenta la complejidad.</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="text"
                         id="filters"
@@ -314,7 +390,17 @@
                       name="data_augmentation"
                       checked
                     />
-                    <label for="data-augmentation">Usar aumento de datos</label>
+                    <label for="data-augmentation"
+                      >Usar aumento de datos
+                      <span class="tooltip-container">
+                        <span class="tooltip-icon">i</span>
+                        <span class="tooltip-text"
+                          >Técnica para generar artificialmente más datos de
+                          entrenamiento mediante transformaciones, lo que mejora
+                          la generalización..</span
+                        >
+                      </span>
+                    </label>
                   </div>
                 </div>
 

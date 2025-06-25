@@ -237,7 +237,15 @@
                 <div class="form-row">
                   <div class="form-col">
                     <div class="form-group">
-                      <label for="model-name">Nombre del modelo</label>
+                      <label for="model-name"
+                        >Nombre del modelo
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Identificador único para el modelo entrenado.</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="text"
                         id="model-name"
@@ -249,7 +257,16 @@
                   </div>
                   <div class="form-col">
                     <div class="form-group">
-                      <label for="algorithm">Algoritmo</label>
+                      <label for="algorithm"
+                        >Algoritmo
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Método de aprendizaje automático utilizado. Cada
+                            uno tiene fortalezas según el tipo de datos.</span
+                          >
+                        </span>
+                      </label>
                       <select id="algorithm" name="algorithm" required>
                         <option value="svm">
                           Support Vector Machine (SVM)
@@ -264,7 +281,16 @@
                   </div>
                   <div class="form-col">
                     <div class="form-group">
-                      <label for="problem-type">Tipo de problema</label>
+                      <label for="problem-type"
+                        >Tipo de problema
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Clasificación para predecir categorías, Regresión
+                            para predecir valores continuos.</span
+                          >
+                        </span>
+                      </label>
                       <select id="problem-type" name="problem_type" required>
                         <option value="classification">Clasificación</option>
                         <option value="regression">Regresión</option>
@@ -276,7 +302,17 @@
                 <div class="form-row">
                   <div class="form-col">
                     <div class="form-group">
-                      <label for="test-size">Proporción de test</label>
+                      <label for="test-size"
+                        >Proporción de test
+                        <span class="tooltip-container">
+                          <span class="tooltip-icon">i</span>
+                          <span class="tooltip-text"
+                            >Porcentaje de datos reservados para evaluar el
+                            modelo. Típicamente entre 0.1 (10%) y 0.3
+                            (30%).</span
+                          >
+                        </span>
+                      </label>
                       <input
                         type="number"
                         id="test-size"
@@ -303,7 +339,17 @@
                     <div class="form-row">
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="svm-kernel">Kernel</label>
+                          <label for="svm-kernel"
+                            >Kernel
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Función que transforma los datos para encontrar
+                                separaciones no lineales. RBF es versátil,
+                                linear es más simple.</span
+                              >
+                            </span>
+                          </label>
                           <select id="svm-kernel" name="model_params.kernel">
                             <option value="rbf">RBF</option>
                             <option value="linear">Linear</option>
@@ -314,7 +360,17 @@
                       </div>
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="svm-c">C (Regularización)</label>
+                          <label for="svm-c"
+                            >C (Regularización)
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Controla el equilibrio entre simplicidad del
+                                modelo y clasificación correcta. Valores más
+                                altos pueden causar sobreajuste.</span
+                              >
+                            </span>
+                          </label>
                           <input
                             type="number"
                             id="svm-c"
@@ -327,7 +383,18 @@
                       </div>
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="svm-gamma">Gamma</label>
+                          <label for="svm-gamma"
+                            >Gamma
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Define cuánto influye un solo ejemplo en el
+                                entrenamiento. Valores más altos crean modelos
+                                más ajustados a los datos de
+                                entrenamiento.</span
+                              >
+                            </span>
+                          </label>
                           <input
                             type="text"
                             id="svm-gamma"
@@ -347,7 +414,17 @@
                     <div class="form-row">
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="knn-n-neighbors">Número de vecinos</label>
+                          <label for="knn-n-neighbors"
+                            >Número de vecinos
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Cantidad de puntos cercanos considerados para
+                                la predicción. Valores más altos suavizan las
+                                predicciones.</span
+                              >
+                            </span>
+                          </label>
                           <input
                             type="number"
                             id="knn-n-neighbors"
@@ -359,7 +436,17 @@
                       </div>
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="knn-weights">Pesos</label>
+                          <label for="knn-weights"
+                            >Pesos
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Cómo se ponderan los vecinos. Uniform: todos
+                                iguales; Distance: los más cercanos tienen más
+                                influencia.</span
+                              >
+                            </span>
+                          </label>
                           <select id="knn-weights" name="model_params.weights">
                             <option value="uniform">Uniforme</option>
                             <option value="distance">Distancia</option>
@@ -368,7 +455,16 @@
                       </div>
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="knn-algorithm">Algoritmo</label>
+                          <label for="knn-algorithm"
+                            >Algoritmo
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Método para encontrar vecinos. Auto selecciona
+                                el mejor para los datos específicos.</span
+                              >
+                            </span>
+                          </label>
                           <select
                             id="knn-algorithm"
                             name="model_params.algorithm"
@@ -388,7 +484,17 @@
                     <div class="form-row">
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="rf-n-estimators">Número de árboles</label>
+                          <label for="rf-n-estimators"
+                            >Número de árboles
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Cantidad de árboles en el bosque. Más árboles
+                                generalmente mejoran el rendimiento hasta cierto
+                                punto.</span
+                              >
+                            </span>
+                          </label>
                           <input
                             type="number"
                             id="rf-n-estimators"
@@ -400,7 +506,16 @@
                       </div>
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="rf-max-depth">Profundidad máxima</label>
+                          <label for="rf-max-depth"
+                            >Profundidad máxima
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Longitud máxima de ruta desde la raíz hasta una
+                                hoja. Limita la complejidad del modelo.</span
+                              >
+                            </span>
+                          </label>
                           <input
                             type="number"
                             id="rf-max-depth"
@@ -417,6 +532,14 @@
                         <div class="form-group">
                           <label for="rf-min-samples-split">
                             Muestras mínimas para dividir
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Número mínimo de muestras requeridas para
+                                dividir un nodo. Ayuda a prevenir el
+                                sobreajuste.</span
+                              >
+                            </span>
                           </label>
                           <input
                             type="number"
@@ -435,7 +558,16 @@
                     <div class="form-row">
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="lr-model-type">Tipo</label>
+                          <label for="lr-model-type"
+                            >Tipo
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Regresión básica o variantes con regularización
+                                como Ridge o Lasso.</span
+                              >
+                            </span>
+                          </label>
                           <select
                             id="lr-model-type"
                             name="model_params.model_type"
@@ -448,7 +580,17 @@
                       </div>
                       <div class="form-col">
                         <div class="form-group">
-                          <label for="lr-alpha">Alpha (Regularización)</label>
+                          <label for="lr-alpha"
+                            >Alpha (Regularización)
+                            <span class="tooltip-container">
+                              <span class="tooltip-icon">i</span>
+                              <span class="tooltip-text"
+                                >Parámetro de regularización para Ridge y Lasso.
+                                Controla la penalización sobre los
+                                coeficientes.</span
+                              >
+                            </span>
+                          </label>
                           <input
                             type="number"
                             id="lr-alpha"
