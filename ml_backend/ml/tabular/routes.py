@@ -588,3 +588,62 @@ def predict_with_real_data():
             'success': False,
             'error': str(e)
         }), 500
+    
+@tabular_bp.route('/preview', methods=['POST'])
+@jwt_required()
+@user_required
+def preview_tabular_data():
+    """Endpoint para obtener una vista previa de datos tabulares"""
+    try:
+        # Verificar si se proporcionó un archivo
+        if 'file' not in request.files:
+            return jsonify({"error": "No se proporcionó un archivo"}), 400
+        
+        file = request.files['file']
+        
+        # Verificar si el archivo tiene un nombre
+        if file.filename == '':
+            return jsonify({"error": "No se seleccionó un archivo"}), 400
+        
+        # Verificar el formato del archivo
+        allowed_extensions = current_app.config['ALLOWED_TABULAR_EXTENSIONS']
+        file_ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+        
+        if file_ext not in allowed_extensions:
+            return jsonify({
+                "error": f"Formato de archivo no soportado. Debe ser: {', '.join(allowed_extensions)}"
+            }), 400
+        
+        # Crear directorio temporal para guardar el archivo
+        temp_dir = tempfile.mkdtemp()
+        temp_path = os.path.join(temp_dir, secure_filename(file.filename))
+        
+        # Guardar archivo
+        file.save(temp_path)
+        
+        # Cargar datos
+        df = load_tabular_data(temp_path)
+        
+        # Obtener muestra para vista previa (primeras 100 filas)
+        preview_data = df.head(100).to_dict('records')
+        
+        # Obtener columnas
+        columns = df.columns.tolist()
+        
+        # Limpiar archivos temporales
+        os.remove(temp_path)
+        os.rmdir(temp_dir)
+        
+        return jsonify({
+            'success': True,
+            'data': preview_data,
+            'columns': columns,
+            'rows_count': len(df)
+        }), 200
+        
+    except Exception as e:
+        logging.exception(f"Error al generar vista previa de datos tabulares: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
