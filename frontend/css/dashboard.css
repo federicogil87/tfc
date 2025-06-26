@@ -293,6 +293,9 @@
   flex-direction: column;
   box-shadow: var(--shadow-md);
   z-index: 10;
+  position: fixed;
+  height: 100vh;
+  overflow: hidden; /* Evitar que la barra lateral tenga scroll propio */
 }
 
 /* Cabecera de la barra lateral */
@@ -365,7 +368,10 @@
 .sidebar-nav {
   flex: 1;
   padding: var(--spacing-md) 0;
-  overflow-y: auto;
+  overflow-y: auto; /* Permite scroll interno en la navegación */
+  height: calc(
+    100vh - 150px - 70px
+  ); /* Restar altura del header y footer aproximada */
 }
 
 .nav-item {
@@ -404,6 +410,8 @@
 .sidebar-footer {
   padding: var(--spacing-md);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative; /* Asegura que se mantiene en el flujo del flexbox */
+  margin-top: auto; /* Empuja el footer al final del contenedor flex */
 }
 
 .logout-button {
@@ -431,6 +439,7 @@
 
 /* Contenido principal */
 .main-content {
+  margin-left: 260px;
   flex: 1;
   background-color: var(--light);
   transition: all var(--transition-normal);
@@ -512,10 +521,6 @@
 
   .sidebar.active {
     left: 0;
-  }
-
-  .sidebar-toggle {
-    display: block;
   }
 
   .main-content {
@@ -902,7 +907,7 @@ table {
 .page-button:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-lg);
-  background-color: var(--primary-light);
+  background-color: var(--light);
   color: var(--dark);
 }
 
@@ -920,7 +925,7 @@ table {
 .page-button p {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--medium);
+  color: var(--primary-dark);
 }
 
 /* Estilos para la página de predicción tabular */
