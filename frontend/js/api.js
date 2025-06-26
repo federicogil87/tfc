@@ -517,3 +517,41 @@ async function predictTabularWithRealData(predictionData) {
     throw error;
   }
 }
+
+/**
+ * Predice con un modelo tabular usando datos de prueba (rol Testing)
+ *
+ * @param {string} modelName - Nombre del modelo a utilizar
+ * @returns {Promise<Object>} - Respuesta con la predicción
+ */
+async function predictTabularWithTestData(modelName) {
+  try {
+    // Obtener token
+    const token = localStorage.getItem("accessToken");
+
+    // Enviar solicitud a la API
+    const response = await fetch(
+      `${API_BASE_URL}/api/ml/tabular/predict/test`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ model_name: modelName }),
+      }
+    );
+
+    // Verificar respuesta
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Error al realizar predicción");
+    }
+
+    // Devolver datos de respuesta
+    return await response.json();
+  } catch (error) {
+    console.error("Error en predictTabularWithTestData:", error);
+    throw error;
+  }
+}

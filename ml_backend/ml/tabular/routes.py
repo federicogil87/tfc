@@ -683,3 +683,90 @@ def delete_tabular_model(model_name):
             'success': False,
             'error': str(e)
         }), 500
+
+@tabular_bp.route('/predict/test', methods=['POST'])
+@jwt_required()
+@testing_required
+def predict_with_test_data():
+    """Endpoint para predecir con un modelo tabular usando datos de prueba (rol Testing)"""
+    try:
+        # Obtener datos del JSON
+        data = request.get_json()
+        
+        # Validar parámetros necesarios
+        if not data:
+            return jsonify({"error": "No se proporcionaron datos"}), 400
+        
+        # Obtener el modelo a utilizar
+        model_name = data.get('model_name')
+        if not model_name:
+            return jsonify({"error": "No se proporcionó un nombre de modelo"}), 400
+        
+        # Listar modelos disponibles
+        models = list_models(current_app.config['TABULAR_MODELS_FOLDER'])
+        
+        # Buscar el modelo por nombre
+        model_info = next((m for m in models if m['id'].startswith(model_name)), None)
+        if not model_info:
+            return jsonify({"error": f"Modelo '{model_name}' no encontrado"}), 404
+        
+        # Cargar el modelo
+        model_path = model_info['path']
+        model, metadata = load_sklearn_model(model_path)
+        
+        # Generar datos de prueba aleatorios
+        problem_type = metadata.get('problem_type', 'classification')
+        
+        # Determinar el número de características
+        num_features = 0
+        feature_names = []
+        
+        # Intentar obtener características de los metadatos
+        if metadata and 'features' in metadata:
+            feature_names = metadata.get('features', [])
+            num_features = len(feature_names)
+        elif metadata and 'num_features' in metadata:
+            # Si no hay lista de características pero sí el número, usar eso
+            num_features = metadata.get('num_features')
+            # Generar nombres de características genéricos
+            feature_names = [f'feature_{i}' for i in range(num_features)]
+        else:
+            # Si no hay información de características, hacer una suposición razonable
+            logger.warning(f"No se encontró información de características para el modelo '{model_name}'. Usando valor predeterminado.")
+            num_features = 10  # Valor predeterminado
+            feature_names = [f'feature_{i}' for i in range(num_features)]
+        
+        if num_features == 0:
+            return jsonify({"error": "No se pudo determinar el número de características para el modelo"}), 400
+        
+        # Generar un conjunto de datos aleatorio para la predicción
+        X_test = np.random.rand(1, num_features)
+        
+        # Crear diccionario de características para la respuesta
+        features_dict = {feature_names[i]: float(X_test[0][i]) for i in range(num_features)}
+        
+        # Realizar predicción
+        prediction_result = predict(model, X_test)
+        
+        # Obtener importancia de características si está disponible
+        feature_importance = metadata.get('feature_importance')
+        
+        # Devolver resultados
+        return jsonify({
+            'success': True,
+            'model_name': model_name,
+            'prediction': prediction_result,
+            'features_used': features_dict,
+            'metadata': {
+                'algorithm': metadata.get('algorithm'),
+                'problem_type': problem_type,
+                'feature_importance': feature_importance
+            }
+        }), 200
+    
+    except Exception as e:
+        logging.exception(f"Error en predict_with_test_data: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
