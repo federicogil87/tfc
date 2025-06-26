@@ -33,80 +33,77 @@ async function loadTabularModels() {
 
       if (testModels.length === 0) {
         container.innerHTML = `
-                <div class="alert alert-info">
-                    No hay modelos tabulares entrenados con datos de prueba disponibles. Por favor, entrene un modelo primero.
-                </div>
-            `;
+          <div class="alert alert-info">
+            No hay modelos tabulares entrenados con datos de prueba disponibles. Por favor, entrene un modelo primero.
+          </div>
+          <div class="text-center mt-3">
+            <a href="tabular-train.html" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Entrenar Nuevo Modelo
+            </a>
+          </div>
+        `;
         return;
       }
 
-      // Generar HTML para la lista de modelos
-      let html = '<div class="models-list">';
-
-      testModels.forEach(model => {
-        const modelId = model.id;
-        const modelName = model.metadata?.model_name || modelId;
-        const algorithm = model.metadata?.algorithm || "Desconocido";
-        const problemType = model.metadata?.problem_type || "classification";
-        const createdAt = new Date(model.created_at).toLocaleString();
-
-        html += `
-                <div class="model-item" data-model="${modelId}">
-                    <div class="model-header">
-                        <h3 class="model-name">${modelName}</h3>
-                        <span class="model-algorithm ${algorithm}">${formatAlgorithmName(
-          algorithm
-        )}</span>
-                    </div>
-                    <div class="model-details">
-                        <p><strong>Tipo:</strong> ${
-                          problemType === "classification"
-                            ? "Clasificación"
-                            : "Regresión"
-                        }</p>
-                        <p><strong>Creado:</strong> ${createdAt}</p>
-                    </div>
-                    <button class="btn btn-select-model">Seleccionar</button>
+      // Crear lista de modelos con el mismo formato que tabular-predict-real.js
+      const modelsHtml = `
+        <div class="models-grid">
+          ${testModels
+            .map(
+              model => `
+              <div class="model-card model-selection" data-model="${model.id}">
+                <div class="model-card-header">
+                  <h3 class="model-card-title">${
+                    model.metadata?.model_name || "Sin nombre"
+                  }</h3>
+                  <span class="model-card-type">${formatAlgorithmName(
+                    model.metadata?.algorithm || ""
+                  )}</span>
                 </div>
-            `;
-      });
+                <div class="model-card-info">
+                  <p><span class="label">Algoritmo:</span> ${formatAlgorithmName(
+                    model.metadata?.algorithm || "Desconocido"
+                  )}</p>
+                  <p><span class="label">Tipo:</span> ${
+                    model.metadata?.problem_type === "classification"
+                      ? "Clasificación"
+                      : "Regresión"
+                  }</p>
+                  <p><span class="label">Creado:</span> ${formatDate(
+                    model.created_at
+                  )}</p>
+                </div>
+              </div>
+            `
+            )
+            .join("")}
+        </div>
+      `;
 
-      html += "</div>";
-      container.innerHTML = html;
+      // Mostrar modelos
+      container.innerHTML = modelsHtml;
 
-      // Añadir event listeners a los botones de selección
-      document.querySelectorAll(".btn-select-model").forEach(btn => {
-        btn.addEventListener("click", function () {
-          const modelItem = this.closest(".model-item");
-          const modelId = modelItem.dataset.model;
-
-          // Resaltar el modelo seleccionado
-          document.querySelectorAll(".model-item").forEach(item => {
-            item.classList.remove("selected");
-          });
-          modelItem.classList.add("selected");
-
-          // Actualizar el input con el modelo seleccionado
-          document.getElementById("selected-model").value = modelId;
-
-          // Habilitar el botón de predicción
-          document.getElementById("predict-btn").disabled = false;
-        });
-      });
+      // Configurar eventos para selección de modelos
+      setupModelSelection();
     } else {
       container.innerHTML = `
-                <div class="alert alert-info">
-                    No hay modelos tabulares disponibles. Por favor, entrene un modelo primero.
-                </div>
-            `;
+        <div class="alert alert-info">
+          No hay modelos tabulares disponibles. Por favor, entrene un modelo primero.
+        </div>
+        <div class="text-center mt-3">
+          <a href="tabular-train.html" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Entrenar Nuevo Modelo
+          </a>
+        </div>
+      `;
     }
   } catch (error) {
     console.error("Error al cargar modelos:", error);
     container.innerHTML = `
-            <div class="alert alert-danger">
-                Error al cargar modelos: ${error.message}
-            </div>
-        `;
+      <div class="alert alert-danger">
+        Error al cargar modelos: ${error.message}
+      </div>
+    `;
   }
 }
 
@@ -118,11 +115,11 @@ async function loadTabularModels() {
  */
 function showSpinner(container, message = "Cargando...") {
   container.innerHTML = `
-        <div class="loading-container">
-            <div class="loading-spinner"></div>
-            <p>${message}</p>
-        </div>
-    `;
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>${message}</p>
+    </div>
+  `;
 }
 
 /**
@@ -153,7 +150,7 @@ function setupPredictionForm() {
       predictBtn.classList.add("loading");
 
       try {
-        // Realizar predicción
+        // Realizar predicción con datos de prueba
         const response = await predictTabularWithTestData(modelName);
 
         // Mostrar resultados
@@ -433,5 +430,208 @@ function setupUserInfo() {
     if (userRoleElement && user.roles && user.roles.length > 0) {
       userRoleElement.textContent = user.roles.join(", ");
     }
+  }
+}
+
+/**
+ * Configura la selección de modelos
+ */
+function setupModelSelection() {
+  const modelCards = document.querySelectorAll(".model-selection");
+  const selectedModelInput = document.getElementById("selected-model");
+  const predictBtn = document.getElementById("predict-btn");
+
+  if (modelCards.length > 0 && selectedModelInput && predictBtn) {
+    modelCards.forEach(card => {
+      card.addEventListener("click", function () {
+        // Quitar selección anterior
+        document.querySelectorAll(".model-selection.selected").forEach(el => {
+          el.classList.remove("selected");
+        });
+
+        // Añadir selección actual
+        this.classList.add("selected");
+
+        // Obtener información del modelo
+        const modelId = this.dataset.model;
+
+        // Actualizar input
+        selectedModelInput.value = modelId;
+
+        // Habilitar botón de predicción
+        predictBtn.disabled = false;
+
+        // Ocultar resultados anteriores
+        document.getElementById("prediction-results").style.display = "none";
+      });
+    });
+  }
+}
+
+/**
+ * Muestra los resultados de la predicción
+ *
+ * @param {Object} results - Resultados de la predicción
+ */
+function displayPredictionResults(results) {
+  const dataContainer = document.getElementById("data-container");
+  const predictionDetails = document.getElementById("prediction-details");
+  const resultsCard = document.getElementById("prediction-results");
+
+  if (dataContainer && predictionDetails && resultsCard) {
+    // Mostrar datos de características utilizadas
+    if (results.features_used) {
+      let testDataHtml = `
+        <h3>Datos de Prueba Utilizados</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.entries(results.features_used)
+              .map(
+                ([feature, value]) => `
+                <tr>
+                  <td>${feature}</td>
+                  <td>${formatValue(value)}</td>
+                </tr>
+              `
+              )
+              .join("")}
+          </tbody>
+        </table>
+        <p class="mt-2 text-muted">
+          <i class="fas fa-info-circle"></i> 
+          Datos generados aleatoriamente para pruebas
+        </p>
+      `;
+
+      dataContainer.innerHTML = testDataHtml;
+    } else {
+      dataContainer.innerHTML = `
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          No hay información sobre las características utilizadas en la predicción.
+        </div>
+      `;
+    }
+
+    // Mostrar resultado de la predicción
+    let predictionHtml = `<h3>Resultados de la Predicción</h3>`;
+
+    if (results.prediction) {
+      // Para clasificación con probabilidades
+      if (results.prediction.probabilities) {
+        predictionHtml += `
+          <div class="prediction-summary">
+            <p><strong>Clase predicha:</strong> ${
+              results.prediction.predictions[0]
+            }</p>
+            <p><strong>Confianza:</strong> ${(
+              Math.max(...results.prediction.probabilities[0]) * 100
+            ).toFixed(2)}%</p>
+          </div>
+          
+          <h4 class="mt-3">Probabilidades por Clase</h4>
+          <div class="probabilities-list">
+        `;
+
+        // Mostrar probabilidades para cada clase
+        const probabilities = results.prediction.probabilities[0];
+        probabilities.forEach((prob, index) => {
+          predictionHtml += `
+            <div class="probability-item">
+              <div class="probability-label">Clase ${index}</div>
+              <div class="probability-bar-container">
+                <div class="probability-bar" style="width: ${
+                  prob * 100
+                }%"></div>
+                <div class="probability-value">${(prob * 100).toFixed(2)}%</div>
+              </div>
+            </div>
+          `;
+        });
+
+        predictionHtml += `</div>`;
+      } else {
+        // Para regresión o clasificación sin probabilidades
+        const prediction = results.prediction.predictions[0];
+        const isProbablyRegression = !Number.isInteger(prediction);
+
+        predictionHtml += `
+          <div class="prediction-summary">
+            <p><strong>${
+              isProbablyRegression ? "Valor predicho:" : "Clase predicha:"
+            }</strong> ${formatValue(prediction)}</p>
+          </div>
+        `;
+      }
+    } else {
+      predictionHtml += `
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          No se encontraron resultados de predicción.
+        </div>
+      `;
+    }
+
+    // Mostrar información del modelo
+    predictionHtml += `
+      <div class="model-info mt-4">
+        <h4>Información del Modelo</h4>
+        <p><strong>Nombre:</strong> ${results.model_name || "Sin nombre"}</p>
+        <p><strong>Algoritmo:</strong> ${formatAlgorithmName(
+          results.metadata?.algorithm || ""
+        )}</p>
+        <p><strong>Tipo:</strong> ${
+          results.metadata?.problem_type === "classification"
+            ? "Clasificación"
+            : "Regresión"
+        }</p>
+      </div>
+    `;
+
+    // Mostrar importancia de características si está disponible
+    if (results.metadata?.feature_importance) {
+      predictionHtml += `
+        <div class="feature-importance mt-4">
+          <h4>Importancia de Características</h4>
+          <div class="feature-importance-list">
+      `;
+
+      // Ordenar características por importancia
+      const sortedFeatures = Object.entries(results.metadata.feature_importance)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 10); // Mostrar solo las 10 más importantes
+
+      sortedFeatures.forEach(([feature, importance]) => {
+        const importancePercent = (importance * 100).toFixed(1);
+        predictionHtml += `
+          <div class="feature-importance-item">
+            <div class="feature-importance-label">${feature}</div>
+            <div class="feature-importance-bar-container">
+              <div class="feature-importance-bar" style="width: ${importancePercent}%"></div>
+              <div class="feature-importance-value">${importancePercent}%</div>
+            </div>
+          </div>
+        `;
+      });
+
+      predictionHtml += `
+          </div>
+        </div>
+      `;
+    }
+
+    predictionDetails.innerHTML = predictionHtml;
+
+    // Mostrar el contenedor de resultados
+    resultsCard.style.display = "block";
+
+    // Hacer scroll hacia los resultados
+    resultsCard.scrollIntoView({ behavior: "smooth" });
   }
 }
