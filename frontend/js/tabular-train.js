@@ -72,10 +72,32 @@ function setupTrainingForm() {
     trainingForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
+      // Verificar si ya hay un entrenamiento en curso
+      if (
+        window.trainingBlocker &&
+        window.trainingBlocker.isTrainingInProgress()
+      ) {
+        showAlert(
+          "Ya hay un entrenamiento en curso. Por favor espere.",
+          "warning",
+          document.getElementById("alerts-container")
+        );
+        return;
+      }
+
       // Mostrar estado de carga
       const submitButton = trainingForm.querySelector('button[type="submit"]');
       submitButton.disabled = true;
       submitButton.classList.add("loading");
+
+      // Iniciar bloqueo con el TrainingBlocker
+      if (window.trainingBlocker) {
+        window.trainingBlocker.startBlock(submitButton);
+      } else {
+        // Fallback si no está disponible el TrainingBlocker
+        submitButton.disabled = true;
+        submitButton.classList.add("loading");
+      }
 
       // Ocultar resultados anteriores
       const resultsElement = document.getElementById("training-results");
@@ -215,9 +237,14 @@ function setupTrainingForm() {
           document.getElementById("alerts-container")
         );
       } finally {
-        // Quitar estado de carga
-        submitButton.disabled = false;
-        submitButton.classList.remove("loading");
+        // Quitar estado de carga y desbloquear navegación
+        if (window.trainingBlocker) {
+          window.trainingBlocker.endBlock(submitButton);
+        } else {
+          // Fallback si no está disponible el TrainingBlocker
+          submitButton.disabled = false;
+          submitButton.classList.remove("loading");
+        }
       }
     });
   } else {

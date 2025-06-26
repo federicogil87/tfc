@@ -576,6 +576,15 @@
               <div id="results-content"></div>
             </div>
           </div>
+
+          <div
+            class="alert alert-info alert-dismissible fade show"
+            role="alert"
+          >
+            <strong>Nota:</strong> Durante el entrenamiento, la página quedará
+            bloqueada para evitar pérdida de progreso. Por favor, no cierre ni
+            refresque la página hasta que el proceso termine.
+          </div>
         </div>
       </main>
     </div>
@@ -584,6 +593,7 @@
     <script src="../js/auth.js"></script>
     <script src="../js/dashboard.js"></script>
     <script src="../js/tabular-train.js"></script>
+    <script src="../js/trainingBlocker.js"></script>
     <script>
       // Proteger esta página, solo para usuarios con rol Testing
       handleProtectedPage(["Testing"]);
