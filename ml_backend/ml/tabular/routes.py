@@ -6,6 +6,7 @@ import pandas as pd
 import logging
 import datetime
 import tempfile
+import math
 from flask import Blueprint, request, jsonify, current_app, send_file
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -88,6 +89,27 @@ def get_model_by_algorithm(algorithm, params, problem_type):
         
     else:
         raise ValueError(f"Algoritmo no soportado: {algorithm}")
+
+# Función auxiliar para limpiar datos JSON
+def clean_for_json(obj):
+    """
+    Limpia datos para serialización JSON, reemplazando NaN con None
+    """
+    if isinstance(obj, dict):
+        return {key: clean_for_json(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [clean_for_json(item) for item in obj]
+    elif isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
+        return None
+    elif hasattr(obj, 'item'):  # Para tipos numpy
+        val = obj.item()
+        if isinstance(val, float) and (math.isnan(val) or math.isinf(val)):
+            return None
+        return val
+    elif pd.isna(obj):
+        return None
+    else:
+        return obj
 
 # Rutas para entrenamiento con datos de prueba (rol Testing)
 @tabular_bp.route('/train/test', methods=['POST'])
@@ -416,7 +438,10 @@ def train_with_real_data():
                 evaluation = evaluate_classification_model(trained_model, X_test, y_test)
             else:
                 evaluation = evaluate_regression_model(trained_model, X_test, y_test)
-            
+                
+            # Limpiar los datos para JSON
+            evaluation = clean_for_json(evaluation)
+
             # Obtener importancia de características si está disponible
             feature_importance = get_feature_importance(trained_model, used_features)
             
@@ -617,31 +642,59 @@ def preview_tabular_data():
         temp_dir = tempfile.mkdtemp()
         temp_path = os.path.join(temp_dir, secure_filename(file.filename))
         
-        # Guardar archivo
-        file.save(temp_path)
-        
-        # Cargar datos
-        df = load_tabular_data(temp_path)
-        
-        # Obtener muestra para vista previa (primeras 100 filas)
-        preview_data = df.head(100).to_dict('records')
-        
-        # Obtener columnas
-        columns = df.columns.tolist()
-        
-        # Limpiar archivos temporales
-        os.remove(temp_path)
-        os.rmdir(temp_dir)
-        
-        return jsonify({
-            'success': True,
-            'data': preview_data,
-            'columns': columns,
-            'rows_count': len(df)
-        }), 200
+        try:
+            # Guardar archivo
+            file.save(temp_path)
+            
+            # Cargar datos
+            df = load_tabular_data(temp_path)
+            
+            # CORRECCIÓN: Limpiar datos antes de convertir a JSON
+            # Reemplazar valores NaN y problemáticos
+            df_clean = df.copy()
+            
+            # Reemplazar valores infinitos y NaN
+            df_clean = df_clean.replace([np.inf, -np.inf], np.nan)
+            df_clean = df_clean.fillna('')  # Reemplazar NaN con string vacío
+            
+            # Obtener muestra para vista previa (primeras 100 filas)
+            preview_data = df_clean.head(100).to_dict('records')
+            
+            # Limpiar los datos para JSON
+            preview_data = clean_for_json(preview_data)
+            
+            # Obtener columnas
+            columns = df.columns.tolist()
+            
+            # Información adicional
+            total_rows = len(df)
+            preview_count = min(100, total_rows)
+            
+            response_data = {
+                'success': True,
+                'data': preview_data,
+                'columns': columns,
+                'rows_count': total_rows,
+                'preview_count': preview_count
+            }
+            
+            # Limpiar toda la respuesta
+            response_data = clean_for_json(response_data)
+            
+            return jsonify(response_data), 200
+            
+        finally:
+            # Limpiar archivos temporales
+            try:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+                if os.path.exists(temp_dir):
+                    os.rmdir(temp_dir)
+            except OSError as e:
+                logger.warning(f"Error al limpiar archivos temporales: {e}")
         
     except Exception as e:
-        logging.exception(f"Error al generar vista previa de datos tabulares: {str(e)}")
+        logger.exception(f"Error al generar vista previa de datos tabulares: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)

@@ -216,3 +216,145 @@ def create_test_image_labels(num_images, num_classes):
         Array de etiquetas
     """
     return np.random.randint(0, num_classes, size=num_images)
+
+# Agregar esta función al archivo ml_backend/ml/common/data.py
+
+def clean_dataframe_for_json(df):
+    """
+    Limpia un DataFrame para que sea serializable a JSON
+    
+    Args:
+        df: DataFrame de pandas
+    
+    Returns:
+        DataFrame limpio sin valores problemáticos
+    """
+    df_clean = df.copy()
+    
+    # Reemplazar valores infinitos con NaN primero
+    df_clean = df_clean.replace([np.inf, -np.inf], np.nan)
+    
+    # Para columnas numéricas, reemplazar NaN con 0 o con la mediana
+    numeric_columns = df_clean.select_dtypes(include=[np.number]).columns
+    for col in numeric_columns:
+        # Puedes elegir entre reemplazar con 0 o con la mediana
+        df_clean[col] = df_clean[col].fillna(0)  # O usar .fillna(df_clean[col].median())
+    
+    # Para columnas de texto/objeto, reemplazar NaN con string vacío
+    object_columns = df_clean.select_dtypes(include=['object']).columns
+    for col in object_columns:
+        df_clean[col] = df_clean[col].fillna('')
+    
+    # Para columnas datetime, mantener NaN como None
+    datetime_columns = df_clean.select_dtypes(include=['datetime64']).columns
+    for col in datetime_columns:
+        df_clean[col] = df_clean[col].where(pd.notna(df_clean[col]), None)
+    
+    return df_clean
+
+# MODIFICAR la función load_tabular_data existente para incluir limpieza:
+
+def load_tabular_data(file_path, clean_for_json=True):
+    """
+    Carga datos tabulares desde un archivo CSV o Excel
+    
+    Args:
+        file_path: Ruta al archivo
+        clean_for_json: Si True, limpia los datos para serialización JSON
+    
+    Returns:
+        DataFrame de pandas con los datos
+    """
+    try:
+        # Determinar el tipo de archivo por la extensión
+        if file_path.endswith('.csv'):
+            # Para CSV, intentar detectar el encoding automáticamente
+            try:
+                df = pd.read_csv(file_path, encoding='utf-8')
+            except UnicodeDecodeError:
+                try:
+                    df = pd.read_csv(file_path, encoding='latin-1')
+                except UnicodeDecodeError:
+                    df = pd.read_csv(file_path, encoding='cp1252')
+        elif file_path.endswith(('.xlsx', '.xls')):
+            df = pd.read_excel(file_path)
+        else:
+            raise ValueError(f"Formato de archivo no soportado: {file_path}")
+        
+        # Limpiar datos si se solicita
+        if clean_for_json:
+            df = clean_dataframe_for_json(df)
+        
+        return df
+        
+    except Exception as e:
+        raise ValueError(f"Error al cargar el archivo {file_path}: {str(e)}")
+
+# MODIFICAR la función prepare_tabular_data para manejar mejor los valores faltantes:
+
+def prepare_tabular_data(df, target_column, features=None, categorical_columns=None):
+    """
+    Prepara datos tabulares para el entrenamiento
+    
+    Args:
+        df: DataFrame con los datos
+        target_column: Nombre de la columna objetivo
+        features: Lista de columnas a usar como características (None para usar todas)
+        categorical_columns: Lista de columnas categóricas para codificar
+    
+    Returns:
+        X, y, columnas utilizadas, columnas categóricas codificadas
+    """
+    # Verificar que la columna objetivo existe
+    if target_column not in df.columns:
+        raise ValueError(f"La columna objetivo '{target_column}' no existe en el DataFrame")
+    
+    # Determinar características a utilizar
+    if features is None:
+        features = [col for col in df.columns if col != target_column]
+    
+    # Verificar que todas las características existen
+    missing_features = [col for col in features if col not in df.columns]
+    if missing_features:
+        raise ValueError(f"Las siguientes columnas no existen en el DataFrame: {missing_features}")
+    
+    # Crear copia del DataFrame para no modificar el original
+    df_copy = df[features + [target_column]].copy()
+    
+    # Limpiar datos problemáticos primero
+    df_copy = df_copy.replace([np.inf, -np.inf], np.nan)
+    
+    # Tratar valores faltantes de manera más robusta
+    for col in df_copy.columns:
+        if df_copy[col].dtype == 'object' or df_copy[col].dtype.name == 'category':
+            # Para columnas categóricas, reemplazar con la moda o valor más frecuente
+            mode_val = df_copy[col].mode()
+            if len(mode_val) > 0:
+                df_copy[col] = df_copy[col].fillna(mode_val[0])
+            else:
+                df_copy[col] = df_copy[col].fillna('unknown')
+        else:
+            # Para columnas numéricas, reemplazar con la mediana
+            median_val = df_copy[col].median()
+            if pd.isna(median_val):
+                df_copy[col] = df_copy[col].fillna(0)
+            else:
+                df_copy[col] = df_copy[col].fillna(median_val)
+    
+    # Procesar columnas categóricas
+    encoded_columns = {}
+    if categorical_columns:
+        for col in categorical_columns:
+            if col in df_copy.columns:
+                # Convertir a tipo categórico para obtener códigos
+                df_copy[col] = df_copy[col].astype('category')
+                # Guardar mapeo de categorías para interpretación posterior
+                encoded_columns[col] = dict(enumerate(df_copy[col].cat.categories))
+                # Reemplazar con códigos numéricos
+                df_copy[col] = df_copy[col].cat.codes
+    
+    # Separar características y variable objetivo
+    X = df_copy[features].values
+    y = df_copy[target_column].values
+    
+    return X, y, features, encoded_columns

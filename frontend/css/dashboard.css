@@ -1032,7 +1032,7 @@ table {
 }
 
 .data-table th {
-  background-color: var(--light);
+  background-color: var(--primary-color);
   font-weight: 600;
   position: sticky;
   top: 0;
