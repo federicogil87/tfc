@@ -524,7 +524,7 @@ tr:hover {
 
 .multiselect-wrapper select[multiple] {
   width: 100%;
-  min-height: 120px;
+  min-height: 250px;
   border-radius: var(--border-radius-md);
   border: 1px solid var(--medium-light);
   padding: 5px;
