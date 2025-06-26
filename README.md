@@ -52,7 +52,7 @@ Interfaz de usuario desarrollada con HTML5, CSS3 y JavaScript vanilla.
 
 ### Backend
 
-- Python 3.9+
+- Python 3.9
 - Flask (Framework web)
 - SQLAlchemy (ORM)
 - JWT (Autenticación)
@@ -74,59 +74,59 @@ Interfaz de usuario desarrollada con HTML5, CSS3 y JavaScript vanilla.
 
 ```
 ml_backend/
-├── app.py                  # Punto de entrada de la aplicación
-├── config.py               # Configuraciones generales
-├── requirements.txt        # Dependencias del proyecto
-├── .env                    # Variables de entorno (no en control de versiones)
-├── auth/                   # Módulo de autenticación
-│   ├── models.py           # Modelos de usuario y roles
-│   ├── routes.py           # Rutas para autenticación
-│   └── utils.py            # Utilidades para autenticación
-├── ml/                     # Módulo de machine learning
-│   ├── cnn/                # Algoritmos CNN para imágenes
-│   │   ├── model.py        # Definición del modelo CNN
-│   │   ├── routes.py       # Endpoints para CNN
-│   │   └── utils.py        # Utilidades para CNN
-│   ├── tabular/            # Algoritmos para datos tabulares
-│   │   ├── models.py       # Algoritmos (SVM, k-NN, RandomForest, Regresión)
-│   │   ├── routes.py       # Endpoints para algoritmos tabulares
-│   │   └── utils.py        # Utilidades para datos tabulares
-│   └── common/             # Funcionalidades comunes de ML
-│       ├── data.py         # Procesamiento de datos
-│       └── model_storage.py # Gestión de modelos entrenados
-├── uploads/                # Directorio para archivos subidos
-└── models/                 # Directorio para guardar modelos entrenados
+├── app.py                    # Punto de entrada de la aplicación
+├── config.py                 # Configuraciones generales
+├── requirements.txt          # Dependencias del proyecto
+├── .env                      # Variables de entorno (no en control de versiones)
+├── auth/                     # Módulo de autenticación
+│   ├── models.py             # Modelos de usuario y roles
+│   ├── routes.py             # Rutas para autenticación
+│   └── utils.py              # Utilidades para autenticación
+├── ml/                       # Módulo de machine learning
+│   ├── cnn/                  # Algoritmos CNN para imágenes
+│   │   ├── model.py          # Definición del modelo CNN
+│   │   ├── routes.py         # Endpoints para CNN
+│   │   └── utils.py          # Utilidades para CNN
+│   ├── tabular/              # Algoritmos para datos tabulares
+│   │   ├── models.py         # Algoritmos (SVM, k-NN, RandomForest, Regresión)
+│   │   ├── routes.py         # Endpoints para algoritmos tabulares
+│   │   └── utils.py          # Utilidades para datos tabulares
+│   └── common/               # Funcionalidades comunes de ML
+│       ├── data.py           # Procesamiento de datos
+│       └── model_storage.py  # Gestión de modelos entrenados
+├── uploads/                  # Directorio para archivos subidos
+└── models/                   # Directorio para guardar modelos entrenados
 ```
 
 ### Frontend
 
 ```
 frontend/
-├── index.html              # Página de login
+├── index.html                    # Página de login
 ├── css/
-│   ├── style.css           # Estilos globales
-│   ├── dashboard.css       # Estilos para el dashboard
-│   └── login.css           # Estilos para la página de login
+│   ├── style.css                 # Estilos globales
+│   ├── dashboard.css             # Estilos para el dashboard
+│   └── login.css                 # Estilos para la página de login
 ├── js/
-│   ├── api.js              # Funciones para comunicación con la API
-│   ├── auth.js             # Funcionalidad de autenticación
-│   ├── dashboard.js        # Funcionalidad general del dashboard
-│   ├── cnn-train.js        # Entrenamiento de modelos CNN
-│   ├── cnn-predict.js      # Predicción con modelos CNN
-│   ├── tabular-train.js    # Entrenamiento de modelos tabulares
-│   ├── tabular-predict.js  # Predicción con modelos tabulares
-│   └── admin.js            # Funcionalidad de administración
+│   ├── api.js                    # Funciones para comunicación con la API
+│   ├── auth.js                   # Funcionalidad de autenticación
+│   ├── dashboard.js              # Funcionalidad general del dashboard
+│   ├── cnn-train.js              # Entrenamiento de modelos CNN
+│   ├── cnn-predict.js            # Predicción con modelos CNN
+│   ├── tabular-train.js          # Entrenamiento de modelos tabulares
+│   ├── tabular-predict.js        # Predicción con modelos tabulares
+│   └── admin.js                  # Funcionalidad de administración
 └── pages/
-    ├── home.html           # Página principal
-    ├── dashboard.html      # Dashboard de modelos
-    ├── admin.html          # Panel de administración
-    ├── cnn-train.html      # Entrenamiento CNN (prueba)
-    ├── cnn-predict.html    # Predicción CNN (prueba)
-    ├── cnn-train-real.html # Entrenamiento CNN (real)
-    ├── cnn-predict-real.html # Predicción CNN (real)
-    ├── tabular-train.html  # Entrenamiento tabular (prueba)
-    ├── tabular-predict.html # Predicción tabular (prueba)
-    ├── tabular-train-real.html # Entrenamiento tabular (real)
+    ├── home.html                 # Página principal
+    ├── dashboard.html            # Dashboard de modelos
+    ├── admin.html                # Panel de administración
+    ├── cnn-train.html            # Entrenamiento CNN (prueba)
+    ├── cnn-predict.html          # Predicción CNN (prueba)
+    ├── cnn-train-real.html       # Entrenamiento CNN (real)
+    ├── cnn-predict-real.html     # Predicción CNN (real)
+    ├── tabular-train.html        # Entrenamiento tabular (prueba)
+    ├── tabular-predict.html      # Predicción tabular (prueba)
+    ├── tabular-train-real.html   # Entrenamiento tabular (real)
     └── tabular-predict-real.html # Predicción tabular (real)
 ```
 
@@ -134,7 +134,7 @@ frontend/
 
 ### Requisitos previos
 
-- Python 3.9 o superior
+- Python 3.9 (Usar versión exacta)
 - Node.js y npm (opcional, para herramientas de desarrollo)
 - Navegador web moderno (Chrome, Firefox, Edge)
 
@@ -218,27 +218,18 @@ La contraseña para todos los usuarios es `123456`.
 - La aplicación está optimizada para navegadores modernos
 - En caso de problemas con navegadores antiguos, actualizar a las últimas versiones
 
+### Python 3.9
+
+- La instalación de las librerias necesarias de Python falla si se utiliza una version posterior a 3.9
+
 ## Consideraciones para producción
 
 - Cambiar las claves secretas en `.env`
-- Configurar un servidor WSGI como Gunicorn
-- Usar un proxy inverso como Nginx
 - Implementar HTTPS
 - Utilizar una base de datos más robusta (PostgreSQL, MySQL)
 - Configurar almacenamiento persistente para modelos y archivos
-
-## Contribución
-
-1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -am 'Añadir nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crea un nuevo Pull Request
-
-## Licencia
-
-Este proyecto está licenciado bajo [MIT License](LICENSE).
+- Generar nuevos usuarios/roles y generar contraseñas seguras
 
 ## Contacto
 
-Para soporte o consultas, contactar a través de [correo electrónico](mailto:soporte@deteccioncancer.com).
+Para soporte o consultas, contactar a través de [correo electrónico](mailto:federico.gil@comunidad.ub.edu.ar).
