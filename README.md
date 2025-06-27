@@ -199,6 +199,7 @@ La contraseña para todos los usuarios es `123456`.
 - **Administrador**:
 
   - Gestión de usuarios (creación, edición, eliminación)
+  - Acceso a todas las funcionalidades
   - Eliminación de modelos
 
 - **Testing**:
