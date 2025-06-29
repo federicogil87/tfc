@@ -1,3 +1,4 @@
+let detectedClasses = [];
 /**
  * Funcionalidad para la página de entrenamiento de modelos CNN con datos reales
  */
@@ -5,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Configurar formulario
   setupArchitectureToggle();
   setupTrainingForm();
+  setupClassDetection();
 
   // Inicializar componentes de UI
   setupUserInfo();
@@ -33,6 +35,155 @@ function setupArchitectureToggle() {
     // Ejecutar al cargar
     toggleCustomOptions();
   }
+}
+
+/**
+ * Configura el manejo de detección de clases desde el archivo ZIP
+ */
+function setupClassDetection() {
+  const fileInput = document.getElementById("file-upload");
+  const customizeCheckbox = document.getElementById("customize-class-names");
+
+  if (fileInput) {
+    // Manejar cambio en el archivo
+    fileInput.addEventListener("change", handleFileChange);
+  }
+
+  if (customizeCheckbox) {
+    // Manejar checkbox de personalización
+    customizeCheckbox.addEventListener("change", handleCustomizeToggle);
+  }
+}
+
+/**
+ * Maneja el cambio de archivo ZIP
+ */
+function handleFileChange(e) {
+  const file = e.target.files[0];
+
+  // Limpiar estado anterior
+  resetClassDetection();
+
+  if (!file || !file.name.endsWith(".zip")) {
+    return;
+  }
+
+  // Mostrar contenedor de clases detectadas
+  const container = document.getElementById("detected-classes-container");
+  if (container) {
+    container.style.display = "block";
+  }
+
+  // Hacer el campo de número de clases de solo lectura
+  const numClassesInput = document.getElementById("num-classes");
+  if (numClassesInput) {
+    numClassesInput.readOnly = true;
+  }
+
+  // Mostrar mensaje informativo
+  const messageElement = document.getElementById("classes-detected-message");
+  if (messageElement) {
+    messageElement.innerHTML =
+      '<i class="fas fa-info-circle"></i> Las clases se detectarán automáticamente desde la estructura de carpetas del archivo ZIP';
+  }
+}
+
+/**
+ * Maneja el toggle del checkbox de personalización
+ */
+function handleCustomizeToggle(e) {
+  const customContainer = document.getElementById(
+    "custom-class-names-container"
+  );
+
+  if (!customContainer) return;
+
+  if (e.target.checked) {
+    customContainer.style.display = "block";
+
+    // Si ya conocemos el número de clases, generar campos
+    const numClasses = parseInt(document.getElementById("num-classes").value);
+    if (numClasses > 0) {
+      generateCustomClassFields(numClasses);
+    }
+  } else {
+    customContainer.style.display = "none";
+  }
+}
+
+/**
+ * Genera campos dinámicos para personalizar nombres de clases
+ */
+function generateCustomClassFields(numClasses) {
+  const container = document.getElementById("custom-class-fields");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  for (let i = 0; i < numClasses; i++) {
+    const fieldGroup = document.createElement("div");
+    fieldGroup.className = "class-name-field";
+    fieldGroup.style.marginBottom = "10px";
+
+    const label = document.createElement("label");
+    label.textContent = `Clase ${i}:`;
+    label.style.display = "inline-block";
+    label.style.width = "100px";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = `class_name_${i}`;
+    input.id = `class_name_${i}`;
+    input.placeholder = `Nombre personalizado para clase ${i}`;
+    input.style.width = "calc(100% - 110px)";
+    input.style.marginLeft = "10px";
+
+    fieldGroup.appendChild(label);
+    fieldGroup.appendChild(input);
+    container.appendChild(fieldGroup);
+  }
+}
+
+/**
+ * Resetea el estado de detección de clases
+ */
+function resetClassDetection() {
+  // Resetear checkbox
+  const customizeCheckbox = document.getElementById("customize-class-names");
+  if (customizeCheckbox) {
+    customizeCheckbox.checked = false;
+  }
+
+  // Ocultar contenedores
+  const customContainer = document.getElementById(
+    "custom-class-names-container"
+  );
+  if (customContainer) {
+    customContainer.style.display = "none";
+  }
+
+  // Limpiar campos
+  const customFields = document.getElementById("custom-class-fields");
+  if (customFields) {
+    customFields.innerHTML = "";
+  }
+
+  // Resetear número de clases
+  const numClassesInput = document.getElementById("num-classes");
+  if (numClassesInput) {
+    numClassesInput.readOnly = false;
+  }
+
+  // Ocultar contenedor de clases detectadas
+  const detectedContainer = document.getElementById(
+    "detected-classes-container"
+  );
+  if (detectedContainer) {
+    detectedContainer.style.display = "none";
+  }
+
+  // Limpiar array de clases detectadas
+  detectedClasses = [];
 }
 
 /**
@@ -264,6 +415,36 @@ function displayTrainingResults(results) {
                 </table>
             </div>
         `;
+
+    if (
+      results.metadata?.class_names &&
+      results.metadata.class_names.length > 0
+    ) {
+      html += `
+          <tr>
+            <th>Clases detectadas:</th>
+            <td>${results.metadata.class_names.join(", ")}</td>
+          </tr>`;
+    } else if (results.evaluation?.model_params?.num_classes) {
+      html += `
+          <tr>
+            <th>Número de clases:</th>
+            <td>${results.evaluation.model_params.num_classes}</td>
+          </tr>`;
+    }
+
+    html += `
+          <tr>
+            <th>Precisión:</th>
+            <td>${(results.evaluation.accuracy * 100).toFixed(2)}%</td>
+          </tr>
+          <tr>
+            <th>Pérdida:</th>
+            <td>${results.evaluation.loss.toFixed(4)}</td>
+          </tr>
+        </table>
+      </div>
+    `;
 
     // Añadir gráfica de entrenamiento si hay historia
     if (results.history && results.history.accuracy) {

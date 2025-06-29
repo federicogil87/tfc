@@ -1113,3 +1113,180 @@ table {
   font-size: var(--font-size-sm);
   font-weight: 600;
 }
+
+/* Contenedor de clases detectadas */
+#detected-classes-container {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--light);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--primary-light);
+}
+
+#detected-classes-container .alert {
+  margin-bottom: var(--spacing-md);
+}
+
+/* Lista de clases detectadas */
+#detected-classes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.detected-class-item {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--white);
+  border: 1px solid var(--medium-light);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--dark);
+}
+
+/* Campos personalizados de clases */
+#custom-class-names-container {
+  padding: var(--spacing-sm);
+  background-color: var(--white);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--medium-light);
+}
+
+.class-name-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.class-name-field:last-child {
+  margin-bottom: 0;
+}
+
+.class-name-field label {
+  flex: 0 0 100px;
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.class-name-field input {
+  flex: 1;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--medium-light);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+}
+
+.class-name-field input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+}
+
+/* Mejoras en la visualización de predicciones */
+.prediction-summary {
+  padding: var(--spacing-lg);
+  background: linear-gradient(
+    135deg,
+    var(--primary-light) 0%,
+    var(--light) 100%
+  );
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.prediction-main h4 {
+  font-size: var(--font-size-xl);
+  color: var(--primary-dark);
+  margin-bottom: var(--spacing-md);
+}
+
+.confidence-bar {
+  width: 100%;
+  height: 30px;
+  background-color: var(--medium-light);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--spacing-sm);
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color) 0%,
+    var(--primary-dark) 100%
+  );
+  transition: width 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.confidence-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+.confidence-text {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--dark);
+}
+
+/* Destacar la clase predicha */
+.probability-item.predicted {
+  background-color: var(--medium-light);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  margin: var(--spacing-xs) 0;
+}
+
+.probability-item.predicted .probability-label {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.probability-item.predicted .fa-check-circle {
+  color: var(--success);
+  margin-left: var(--spacing-xs);
+}
+
+/* Mejorar la visualización de las tarjetas de modelo */
+.model-card-info {
+  font-size: var(--font-size-sm);
+}
+
+.model-card-info p {
+  margin-bottom: var(--spacing-xs);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.model-card-info .label {
+  font-weight: 600;
+  color: var(--medium-dark);
+  flex: 0 0 40%;
+}
+
+.model-card-info p:last-child {
+  margin-bottom: 0;
+}

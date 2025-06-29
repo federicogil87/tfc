@@ -95,38 +95,81 @@ def prepare_tabular_data(df, target_column, features=None, categorical_columns=N
     
     return X, y, features, encoded_columns
 
-def extract_zip_images(zip_path, extract_dir):
+def extract_zip_images_with_classes(zip_path, extract_dir):
     """
-    Extrae imágenes de un archivo ZIP en un directorio específico
+    Extrae imágenes de un archivo ZIP manteniendo la estructura de carpetas
+    y detectando automáticamente las clases
     
     Args:
         zip_path: Ruta al archivo ZIP
         extract_dir: Directorio donde extraer las imágenes
     
     Returns:
-        Lista de rutas a las imágenes extraídas
+        Tupla con:
+        - Lista de rutas a las imágenes extraídas
+        - Lista de etiquetas correspondientes
+        - Diccionario con mapeo de clases {índice: nombre_clase}
     """
+    import os
+    import zipfile
+    from collections import defaultdict
+    
     # Crear directorio si no existe
     os.makedirs(extract_dir, exist_ok=True)
     
-    # Lista para almacenar las rutas de las imágenes
+    # Estructuras para almacenar datos
     image_paths = []
+    labels = []
+    class_mapping = {}
+    class_to_index = {}
+    
+    # Extensiones de imagen permitidas
+    allowed_extensions = {'.jpg', '.jpeg', '.png'}
     
     # Extraer archivos del ZIP
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        # Obtener lista de archivos en el ZIP
-        file_list = zip_ref.namelist()
+        # Extraer todo el contenido
+        zip_ref.extractall(extract_dir)
         
-        # Filtrar solo archivos de imagen
-        allowed_extensions = {'.jpg', '.jpeg', '.png'}
-        image_files = [f for f in file_list if os.path.splitext(f.lower())[1] in allowed_extensions]
-        
-        # Extraer solo las imágenes
-        for file in image_files:
-            zip_ref.extract(file, extract_dir)
-            image_paths.append(os.path.join(extract_dir, file))
+        # Buscar imágenes en la estructura de carpetas
+        for root, dirs, files in os.walk(extract_dir):
+            for file in files:
+                # Verificar si es una imagen
+                if os.path.splitext(file.lower())[1] in allowed_extensions:
+                    # Obtener la ruta completa
+                    full_path = os.path.join(root, file)
+                    
+                    # Obtener el nombre de la carpeta padre (clase)
+                    relative_path = os.path.relpath(full_path, extract_dir)
+                    path_parts = relative_path.split(os.sep)
+                    
+                    # Si la imagen está en una subcarpeta, usar esa como clase
+                    if len(path_parts) > 1:
+                        class_name = path_parts[0]
+                        
+                        # Asignar índice a la clase si no existe
+                        if class_name not in class_to_index:
+                            class_index = len(class_to_index)
+                            class_to_index[class_name] = class_index
+                            class_mapping[class_index] = class_name
+                        
+                        # Agregar imagen y etiqueta
+                        image_paths.append(full_path)
+                        labels.append(class_to_index[class_name])
     
-    return image_paths
+    # Si no se encontraron clases (todas las imágenes en raíz), crear una clase por defecto
+    if not class_mapping:
+        # Buscar imágenes en el directorio raíz
+        for file in os.listdir(extract_dir):
+            if os.path.splitext(file.lower())[1] in allowed_extensions:
+                full_path = os.path.join(extract_dir, file)
+                image_paths.append(full_path)
+                labels.append(0)
+        
+        if image_paths:
+            class_mapping[0] = "Sin clasificar"
+    
+    return image_paths, labels, class_mapping
 
 def prepare_image_data(image_paths, img_height, img_width, labels=None):
     """

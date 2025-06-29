@@ -152,6 +152,55 @@
                     donde cada carpeta representa una clase.
                   </small>
                 </div>
+                <div
+                  class="form-group"
+                  id="detected-classes-container"
+                  style="display: none"
+                >
+                  <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="classes-detected-message"
+                      >Se detectaron clases desde la estructura de
+                      carpetas</span
+                    >
+                  </div>
+
+                  <label>
+                    Clases detectadas
+                    <span class="tooltip-container">
+                      <span class="tooltip-icon">i</span>
+                      <span class="tooltip-text">
+                        Las clases fueron detectadas automáticamente desde las
+                        carpetas en su archivo ZIP. Puede personalizar los
+                        nombres si lo desea.
+                      </span>
+                    </span>
+                  </label>
+
+                  <div id="detected-classes-list">
+                    <!-- Las clases se mostrarán aquí dinámicamente -->
+                  </div>
+
+                  <div class="form-check mt-2">
+                    <input
+                      type="checkbox"
+                      id="customize-class-names"
+                      name="customize_class_names"
+                    />
+                    <label for="customize-class-names">
+                      Personalizar nombres de clases
+                    </label>
+                  </div>
+
+                  <div
+                    id="custom-class-names-container"
+                    style="display: none; margin-top: 15px"
+                  >
+                    <div id="custom-class-fields">
+                      <!-- Los campos de personalización se generarán aquí -->
+                    </div>
+                  </div>
+                </div>
 
                 <div class="row">
                   <div class="col">

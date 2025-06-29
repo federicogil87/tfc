@@ -2,13 +2,15 @@ import os
 import uuid
 import json
 import numpy as np
+import logging
+import base64
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from auth.models import User
 from auth.utils import testing_required, user_required, admin_required, validate_file_extension
-from ml.common.data import extract_zip_images, prepare_image_data, split_data
+from ml.common.data import extract_zip_images_with_classes, prepare_image_data, split_data
 from ml.common.model_storage import save_tensorflow_model, load_tensorflow_model, list_models, delete_model
 from .model import create_cnn_model, train_cnn_model, evaluate_cnn_model, predict_image
 
@@ -153,13 +155,36 @@ def train_with_real_data():
         os.makedirs(os.path.dirname(temp_zip_path), exist_ok=True)
         file.save(temp_zip_path)
         
-        # Extraer imágenes del ZIP
+        # Extraer imágenes del ZIP con detección de clases
         extract_dir = os.path.join(current_app.config['IMAGE_UPLOAD_FOLDER'], f'extract_{uuid.uuid4().hex}')
-        image_paths = extract_zip_images(temp_zip_path, extract_dir)
+        image_paths, labels, class_mapping = extract_zip_images_with_classes(temp_zip_path, extract_dir)
         
         # Verificar si se extrajeron imágenes
         if not image_paths:
             return jsonify({"error": "No se encontraron imágenes en el archivo ZIP"}), 400
+        
+        # Verificar que el número de clases coincida con el parámetro (opcional)
+        num_classes_detected = len(class_mapping)
+        num_classes_param = int(request.form.get('num_classes', num_classes_detected))
+        
+        # Si el usuario especificó un número diferente de clases, usar el detectado
+        if num_classes_param != num_classes_detected:
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Número de clases especificado ({num_classes_param}) difiere del detectado ({num_classes_detected}). Usando el detectado.")
+            num_classes_param = num_classes_detected
+        
+        # Obtener nombres personalizados de clases si se proporcionan
+        custom_class_names = {}
+        for i in range(num_classes_detected):
+            custom_name = request.form.get(f'class_name_{i}')
+            if custom_name and custom_name.strip():
+                custom_class_names[i] = custom_name.strip()
+        
+        # Actualizar el mapeo de clases con nombres personalizados
+        for idx, custom_name in custom_class_names.items():
+            if idx in class_mapping:
+                class_mapping[idx] = custom_name
+        
         
         # Obtener parámetros de entrenamiento
         # Los parámetros pueden venir en form-data junto con el archivo
@@ -181,7 +206,8 @@ def train_with_real_data():
             'kernel_size': tuple(json.loads(request.form.get('kernel_size', '[3, 3]'))),
             'pool_size': tuple(json.loads(request.form.get('pool_size', '[2, 2]'))),
             'dense_units': int(request.form.get('dense_units', 128)),
-            'learning_rate': float(request.form.get('learning_rate', 0.001))
+            'learning_rate': float(request.form.get('learning_rate', 0.001)),
+            'num_classes': num_classes_detected
         }
         
         # Parámetros para el entrenamiento
@@ -232,7 +258,9 @@ def train_with_real_data():
             'loss': float(evaluation['loss']),
             'created_by': get_jwt_identity(),
             'data_type': 'real',
-            'num_images': len(image_paths)
+            'num_images': len(image_paths),
+            'class_mapping': class_mapping,
+            'class_names': list(class_mapping.values())
         }
         
         try:
@@ -384,6 +412,9 @@ def predict_with_real_data():
         # Cargar el modelo
         model_path = model_info['path']
         model, metadata = load_tensorflow_model(model_path)
+
+        # Obtener mapeo de clases si está disponible
+        class_mapping = metadata.get('class_mapping', {})
         
         # Guardar la imagen temporalmente
         temp_img_path = os.path.join(current_app.config['IMAGE_UPLOAD_FOLDER'], secure_filename(file.filename))
@@ -401,9 +432,12 @@ def predict_with_real_data():
         # Obtener la clase con mayor probabilidad
         predicted_class = int(np.argmax(prediction[0]))
         confidence = float(prediction[0][predicted_class])
+
+        # Obtener nombre de la clase desde el mapeo
+        class_name = class_mapping.get(str(predicted_class), f"Clase {predicted_class}")
         
         # Codificar la imagen para devolverla como parte de la respuesta
-        import base64
+        
         with open(temp_img_path, "rb") as img_file:
             image_base64 = base64.b64encode(img_file.read()).decode('utf-8')
         
@@ -419,6 +453,7 @@ def predict_with_real_data():
             'model_name': model_name,
             'prediction': {
                 'class': predicted_class,
+                'class_name': class_name,
                 'confidence': confidence,
                 'probabilities': prediction[0].tolist()
             },

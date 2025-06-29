@@ -69,9 +69,8 @@ async function loadCnnModels() {
                                   model.metadata.accuracy * 100
                                 ).toFixed(2)}%</p>
                                 <p><span class="label">Clases:</span> ${
-                                  model.metadata.model_params?.num_classes ||
-                                  "?"
-                                }</p>
+                                  model.metadata.class_names
+                                }</p>                              
                                 <p><span class="label">Creado:</span> ${formatDate(
                                   model.created_at
                                 )}</p>
@@ -279,51 +278,72 @@ function displayPredictionResults(results) {
     const prediction = results.prediction;
     const numClasses = prediction.probabilities.length;
 
-    predictionDetails.innerHTML = `
-            <h3>Predicción</h3>
-            <div class="prediction-summary">
-                <p><strong>Clase predicha:</strong> Clase ${
-                  prediction.class
-                }</p>
-                <p><strong>Confianza:</strong> ${(
-                  prediction.confidence * 100
-                ).toFixed(2)}%</p>
-            </div>
-            
-            <h4 class="mt-3">Probabilidades por Clase</h4>
-            <div class="probabilities-list">
-                ${prediction.probabilities
-                  .map(
-                    (prob, index) => `
-                    <div class="probability-item">
-                        <div class="probability-label">Clase ${index}</div>
-                        <div class="probability-bar-container">
-                            <div class="probability-bar" style="width: ${
-                              prob * 100
-                            }%"></div>
-                            <div class="probability-value">${(
-                              prob * 100
-                            ).toFixed(2)}%</div>
-                        </div>
-                    </div>
-                `
-                  )
-                  .join("")}
-            </div>
-            
-            <div class="model-info mt-4">
-                <h4>Información del Modelo</h4>
-                <p><strong>Nombre:</strong> ${results.model_name}</p>
-                <p><strong>Arquitectura:</strong> ${
-                  results.metadata.model_params?.architecture || "Personalizada"
-                }</p>
-                <p><strong>Precisión:</strong> ${(
-                  results.metadata.accuracy * 100
-                ).toFixed(2)}%</p>
-            </div>
-        `;
+    // Obtener mapeo de clases y nombres
+    const classMapping = results.metadata?.class_mapping || {};
+    const classNames = results.metadata?.class_names || [];
 
-    // Mostrar resultados
+    // Usar el nombre de clase proporcionado en la predicción o construirlo
+    const predictedClassName =
+      prediction.class_name ||
+      classMapping[prediction.class] ||
+      `Clase ${prediction.class}`;
+
+    predictionDetails.innerHTML = `
+      <h3>Resultado de la Predicción</h3>
+      <div class="prediction-summary">
+        <div class="prediction-main">
+          <h4>${predictedClassName}</h4>
+          <div class="confidence-bar">
+            <div class="confidence-fill" style="width: ${(
+              prediction.confidence * 100
+            ).toFixed(1)}%"></div>
+          </div>
+          <p class="confidence-text">Confianza: ${(
+            prediction.confidence * 100
+          ).toFixed(2)}%</p>
+        </div>
+      </div>
+      
+      <h4 class="mt-4">Probabilidades por Clase</h4>
+      <div class="probabilities-list">
+        ${prediction.probabilities
+          .map((prob, index) => {
+            // Determinar el nombre de la clase
+            let className;
+            if (classMapping[index]) {
+              className = classMapping[index];
+            } else if (classMapping[index.toString()]) {
+              className = classMapping[index.toString()];
+            } else if (classNames && classNames[index]) {
+              className = classNames[index];
+            } else {
+              className = `Clase ${index}`;
+            }
+
+            const isPrediected = index === prediction.class;
+
+            return `
+              <div class="probability-item ${isPrediected ? "predicted" : ""}">
+                <div class="probability-label">
+                  ${className}
+                  ${isPrediected ? '<i class="fas fa-check-circle"></i>' : ""}
+                </div>
+                <div class="probability-bar-container">
+                  <div class="probability-bar" style="width: ${(
+                    prob * 100
+                  ).toFixed(2)}%"></div>
+                  <span class="probability-value">${(prob * 100).toFixed(
+                    2
+                  )}%</span>
+                </div>
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    `;
+
+    // Mostrar tarjeta de resultados
     resultsCard.style.display = "block";
 
     // Dar estilo a la barra de la clase seleccionada
