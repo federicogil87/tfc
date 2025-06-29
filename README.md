@@ -86,11 +86,9 @@ ml_backend/
 │   ├── cnn/                  # Algoritmos CNN para imágenes
 │   │   ├── model.py          # Definición del modelo CNN
 │   │   ├── routes.py         # Endpoints para CNN
-│   │   └── utils.py          # Utilidades para CNN
 │   ├── tabular/              # Algoritmos para datos tabulares
 │   │   ├── models.py         # Algoritmos (SVM, k-NN, RandomForest, Regresión)
 │   │   ├── routes.py         # Endpoints para algoritmos tabulares
-│   │   └── utils.py          # Utilidades para datos tabulares
 │   └── common/               # Funcionalidades comunes de ML
 │       ├── data.py           # Procesamiento de datos
 │       └── model_storage.py  # Gestión de modelos entrenados

@@ -42,12 +42,10 @@ ml_backend/
 │   │   ├── __init__.py
 │   │   ├── model.py          # Definición del modelo CNN
 │   │   ├── routes.py         # Endpoints para CNN
-│   │   └── utils.py          # Utilidades para CNN
 │   ├── tabular/              # Algoritmos para datos tabulares
 │   │   ├── __init__.py
 │   │   ├── models.py         # Definiciones de SVM, k-NN, RandomForest y Regresión
 │   │   ├── routes.py         # Endpoints para algoritmos tabulares
-│   │   └── utils.py          # Utilidades para datos tabulares
 │   └── common/               # Funcionalidades comunes de ML
 │       ├── __init__.py
 │       ├── data.py           # Funciones de procesamiento de datos
