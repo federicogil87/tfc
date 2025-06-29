@@ -7,12 +7,12 @@ import logging
 import datetime
 import tempfile
 import math
-from flask import Blueprint, request, jsonify, current_app, send_file
+from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from auth.models import User
-from auth.utils import testing_required, user_required, admin_required, validate_file_extension
+from auth.utils import testing_required, user_required, admin_required
 from ml.common.data import load_tabular_data, prepare_tabular_data, split_data
 from ml.common.model_storage import save_sklearn_model, load_sklearn_model, list_models, delete_model
 from .models import (

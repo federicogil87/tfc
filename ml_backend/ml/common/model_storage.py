@@ -5,7 +5,6 @@ import datetime
 import numpy as np
 from tensorflow import keras
 from pathlib import Path
-from flask import current_app
 import logging
 
 # Configurar logging para depuración

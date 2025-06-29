@@ -1,10 +1,13 @@
-import os
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras import layers, models, optimizers
-from tensorflow.keras.applications import MobileNetV2, VGG16, ResNet50
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from keras import layers, models, optimizers
+from keras.applications import MobileNetV2, VGG16, ResNet50
+from keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import classification_report, confusion_matrix
+
+#from tensorflow.keras import layers, models, optimizers
+#from tensorflow.keras.applications import MobileNetV2, VGG16, ResNet50
+#from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
 
 def create_cnn_model(
     input_shape=(224, 224, 3),
