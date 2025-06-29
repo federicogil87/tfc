@@ -533,7 +533,6 @@ def predict_with_real_data():
             return jsonify({"error": "No se proporcionaron características para la predicción"}), 400
         
         # Listar modelos disponibles
-        from ml.common.model_storage import list_models
         models = list_models(current_app.config['TABULAR_MODELS_FOLDER'])
         
         # Buscar el modelo por nombre

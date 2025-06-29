@@ -4,6 +4,7 @@ import json
 import numpy as np
 import logging
 import base64
+import shutil
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -275,7 +276,6 @@ def train_with_real_data():
             # Limpiar archivos temporales
             try:
                 os.remove(temp_zip_path)
-                import shutil
                 shutil.rmtree(extract_dir)
             except:
                 pass
@@ -298,7 +298,7 @@ def train_with_real_data():
             # Limpiar archivos temporales en caso de error
             try:
                 os.remove(temp_zip_path)
-                import shutil
+                
                 shutil.rmtree(extract_dir)
             except:
                 pass

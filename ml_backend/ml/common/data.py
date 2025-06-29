@@ -109,11 +109,7 @@ def extract_zip_images_with_classes(zip_path, extract_dir):
         - Lista de rutas a las imágenes extraídas
         - Lista de etiquetas correspondientes
         - Diccionario con mapeo de clases {índice: nombre_clase}
-    """
-    import os
-    import zipfile
-    from collections import defaultdict
-    
+    """    
     # Crear directorio si no existe
     os.makedirs(extract_dir, exist_ok=True)
     

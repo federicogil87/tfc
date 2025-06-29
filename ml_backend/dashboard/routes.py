@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, current_app
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 from datetime import datetime, timedelta
-
 from ml.common.model_storage import list_models
 
 # Crear blueprint para rutas del dashboard

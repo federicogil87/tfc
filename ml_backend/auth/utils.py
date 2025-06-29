@@ -1,6 +1,8 @@
+import uuid
 from functools import wraps
 from flask import jsonify
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
+from werkzeug.utils import secure_filename as werkzeug_secure_filename
 
 def role_required(role_names):
     """
@@ -63,11 +65,6 @@ def secure_filename(filename):
     Asegura que el nombre del archivo sea seguro eliminando caracteres peligrosos
     y limitando la longitud
     """
-    # Eliminamos caracteres potencialmente peligrosos
-    import re
-    import uuid
-    from werkzeug.utils import secure_filename as werkzeug_secure_filename
-    
     # Primero utilizamos la función de Werkzeug
     secure_name = werkzeug_secure_filename(filename)
     
