@@ -58,7 +58,7 @@ function setupClassDetection() {
 /**
  * Maneja el cambio de archivo ZIP
  */
-function handleFileChange(e) {
+async function handleFileChange(e) {
   const file = e.target.files[0];
 
   // Limpiar estado anterior
@@ -86,10 +86,173 @@ function handleFileChange(e) {
     messageElement.innerHTML =
       '<i class="fas fa-info-circle"></i> Las clases se detectarán automáticamente desde la estructura de carpetas del archivo ZIP';
   }
+
+  try {
+    // Detectar clases desde el ZIP
+    const classData = await detectClassesFromZip(file);
+
+    if (classData.success) {
+      // Mostrar las clases detectadas
+      displayDetectedClasses(classData);
+    } else {
+      // Mostrar error
+      if (messageElement) {
+        messageElement.innerHTML = `
+          <i class="fas fa-exclamation-triangle"></i> 
+          Error al analizar el archivo: ${
+            classData.error || "Formato no válido"
+          }
+        `;
+      }
+    }
+  } catch (error) {
+    console.error("Error al procesar el archivo:", error);
+    if (messageElement) {
+      messageElement.innerHTML = `
+        <i class="fas fa-exclamation-triangle"></i> 
+        Error al procesar el archivo. Asegúrese de que sea un ZIP válido.
+      `;
+    }
+  }
 }
 
 /**
- * Maneja el toggle del checkbox de personalización
+ * Lee el archivo ZIP y detecta las clases desde la estructura de carpetas
+ */
+async function detectClassesFromZip(file) {
+  try {
+    // Verificar que JSZip esté disponible
+    if (typeof JSZip === "undefined") {
+      throw new Error(
+        "JSZip no está cargado. Por favor, incluya la librería JSZip."
+      );
+    }
+
+    const zip = new JSZip();
+    const contents = await zip.loadAsync(file);
+
+    // Estructura para almacenar las clases detectadas
+    const classesSet = new Set();
+    const classFolders = new Map(); // Para contar imágenes por clase
+
+    // Extensiones de imagen permitidas
+    const imageExtensions = [".jpg", ".jpeg", ".png"];
+
+    // Analizar cada archivo en el ZIP
+    for (const [path, zipEntry] of Object.entries(contents.files)) {
+      // Ignorar directorios
+      if (zipEntry.dir) continue;
+
+      // Verificar si es una imagen
+      const fileName = path.toLowerCase();
+      const hasImageExtension = imageExtensions.some(ext =>
+        fileName.endsWith(ext)
+      );
+
+      if (hasImageExtension) {
+        // Obtener las partes de la ruta
+        const pathParts = path.split("/");
+
+        // Si la imagen está en una subcarpeta, esa es la clase
+        if (pathParts.length > 1 && pathParts[0] !== "") {
+          const className = pathParts[0];
+          classesSet.add(className);
+
+          // Contar imágenes por clase
+          if (!classFolders.has(className)) {
+            classFolders.set(className, 0);
+          }
+          classFolders.set(className, classFolders.get(className) + 1);
+        }
+      }
+    }
+
+    // Verificar que se encontraron clases
+    if (classesSet.size === 0) {
+      return {
+        success: false,
+        error:
+          "No se encontraron imágenes organizadas en carpetas. Asegúrese de que las imágenes estén en subcarpetas dentro del ZIP.",
+      };
+    }
+
+    // Convertir a array y ordenar alfabéticamente
+    const detectedClassNames = Array.from(classesSet).sort();
+
+    // Crear objeto con información detallada
+    const classInfo = detectedClassNames.map((className, index) => ({
+      index: index,
+      name: className,
+      imageCount: classFolders.get(className) || 0,
+    }));
+
+    return {
+      success: true,
+      classes: classInfo,
+      totalClasses: detectedClassNames.length,
+      totalImages: Array.from(classFolders.values()).reduce((a, b) => a + b, 0),
+    };
+  } catch (error) {
+    console.error("Error al leer el archivo ZIP:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * Actualiza la UI con las clases detectadas
+ */
+function displayDetectedClasses(classData) {
+  // Actualizar el número de clases
+  const numClassesInput = document.getElementById("num-classes");
+  if (numClassesInput) {
+    numClassesInput.value = classData.totalClasses;
+    numClassesInput.readOnly = true;
+  }
+
+  // Mostrar información de clases detectadas
+  const messageElement = document.getElementById("classes-detected-message");
+  if (messageElement) {
+    messageElement.innerHTML = `
+      <i class="fas fa-check-circle" style="color: #4CAF50;"></i> 
+      Se detectaron <strong>${classData.totalClasses} clases</strong> con un total de 
+      <strong>${classData.totalImages} imágenes</strong>
+    `;
+  }
+
+  // Mostrar lista de clases detectadas
+  const classListContainer = document.getElementById("detected-classes-list");
+  if (classListContainer) {
+    classListContainer.innerHTML = classData.classes
+      .map(
+        classInfo => `
+      <div class="detected-class-item">
+        <span class="class-index">${classInfo.index}</span>
+        <span class="class-name">${classInfo.name}</span>
+        <span class="class-count">${classInfo.imageCount} imgs</span>
+      </div>
+    `
+      )
+      .join("");
+
+    // Hacer visible el contenedor
+    classListContainer.style.display = "flex";
+  }
+
+  // Guardar las clases detectadas globalmente
+  detectedClasses = classData.classes;
+
+  // Si el checkbox de personalización está activado, generar campos
+  const customizeCheckbox = document.getElementById("customize-class-names");
+  if (customizeCheckbox && customizeCheckbox.checked) {
+    generateCustomClassFieldsWithData(classData.classes);
+  }
+}
+
+/**
+ * Maneja el toggle del checkbox de personalización - ACTUALIZADO
  */
 function handleCustomizeToggle(e) {
   const customContainer = document.getElementById(
@@ -101,10 +264,15 @@ function handleCustomizeToggle(e) {
   if (e.target.checked) {
     customContainer.style.display = "block";
 
-    // Si ya conocemos el número de clases, generar campos
-    const numClasses = parseInt(document.getElementById("num-classes").value);
-    if (numClasses > 0) {
-      generateCustomClassFields(numClasses);
+    // Si ya tenemos clases detectadas, usarlas
+    if (detectedClasses && detectedClasses.length > 0) {
+      generateCustomClassFieldsWithData(detectedClasses);
+    } else {
+      // Si no, usar el número de clases del input
+      const numClasses = parseInt(document.getElementById("num-classes").value);
+      if (numClasses > 0) {
+        generateCustomClassFields(numClasses);
+      }
     }
   } else {
     customContainer.style.display = "none";
@@ -112,36 +280,40 @@ function handleCustomizeToggle(e) {
 }
 
 /**
- * Genera campos dinámicos para personalizar nombres de clases
+ * Genera campos de personalización con datos predefinidos
  */
-function generateCustomClassFields(numClasses) {
+function generateCustomClassFieldsWithData(classes) {
   const container = document.getElementById("custom-class-fields");
   if (!container) return;
 
   container.innerHTML = "";
 
-  for (let i = 0; i < numClasses; i++) {
+  classes.forEach(classInfo => {
     const fieldGroup = document.createElement("div");
     fieldGroup.className = "class-name-field";
-    fieldGroup.style.marginBottom = "10px";
 
     const label = document.createElement("label");
-    label.textContent = `Clase ${i}:`;
-    label.style.display = "inline-block";
-    label.style.width = "100px";
+    label.innerHTML = `
+      <span class="class-label-index">${classInfo.index}</span>
+      <span class="class-label-original">${classInfo.name}</span>
+    `;
 
     const input = document.createElement("input");
     input.type = "text";
-    input.name = `class_name_${i}`;
-    input.id = `class_name_${i}`;
-    input.placeholder = `Nombre personalizado para clase ${i}`;
-    input.style.width = "calc(100% - 110px)";
-    input.style.marginLeft = "10px";
+    input.name = `class_name_${classInfo.index}`;
+    input.id = `class_name_${classInfo.index}`;
+    input.placeholder = classInfo.name;
+    input.className = "class-name-input";
+
+    const countSpan = document.createElement("span");
+    countSpan.className = "class-image-count";
+    countSpan.textContent = `${classInfo.imageCount} imgs`;
 
     fieldGroup.appendChild(label);
     fieldGroup.appendChild(input);
+    fieldGroup.appendChild(countSpan);
     container.appendChild(fieldGroup);
-  }
+  });
 }
 
 /**

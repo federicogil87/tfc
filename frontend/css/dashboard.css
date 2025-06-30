@@ -1290,3 +1290,257 @@ table {
 .model-card-info p:last-child {
   margin-bottom: 0;
 }
+/* Contenedor principal de clases detectadas */
+#detected-classes-container {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--light);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--primary-light);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+#detected-classes-container .alert {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: #e3f2fd;
+  border-radius: var(--border-radius-sm);
+}
+
+#detected-classes-container .alert strong {
+  color: var(--primary-dark);
+}
+
+/* Lista de clases detectadas */
+#detected-classes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--spacing-sm);
+  background-color: var(--white);
+  border-radius: var(--border-radius-sm);
+}
+
+/* Item individual de clase detectada */
+.detected-class-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--white);
+  border: 1px solid var(--medium-light);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.detected-class-item:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Índice de la clase */
+.class-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border-radius: 50%;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+/* Nombre de la clase */
+.class-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+/* Contador de imágenes */
+.class-count {
+  font-size: var(--font-size-xs);
+  color: var(--medium-dark);
+  background-color: var(--light);
+  padding: 2px 6px;
+  border-radius: var(--border-radius-xs);
+}
+
+/* Checkbox de personalización */
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-md);
+}
+
+.form-check input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.form-check label {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+/* Contenedor de campos personalizados */
+#custom-class-names-container {
+  padding: var(--spacing-md);
+  background-color: var(--white);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--medium-light);
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Campo individual de nombre personalizado */
+.class-name-field {
+  display: grid;
+  grid-template-columns: 200px 1fr 80px;
+  gap: var(--spacing-sm);
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.class-name-field:hover {
+  background-color: var(--light);
+}
+
+.class-name-field:last-child {
+  margin-bottom: 0;
+}
+
+/* Label del campo personalizado */
+.class-name-field label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.class-label-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: var(--medium-light);
+  color: var(--dark);
+  border-radius: 50%;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.class-label-original {
+  color: var(--medium-dark);
+  font-size: var(--font-size-sm);
+}
+
+/* Input de nombre personalizado */
+.class-name-input {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--medium-light);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+}
+
+.class-name-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+}
+
+.class-name-input::placeholder {
+  color: var(--medium);
+  font-style: italic;
+}
+
+/* Contador de imágenes en campo personalizado */
+.class-image-count {
+  font-size: var(--font-size-xs);
+  color: var(--medium-dark);
+  text-align: right;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+/* Scrollbar personalizado para la lista de clases */
+#detected-classes-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+#detected-classes-list::-webkit-scrollbar-track {
+  background: var(--light);
+  border-radius: var(--border-radius-sm);
+}
+
+#detected-classes-list::-webkit-scrollbar-thumb {
+  background: var(--medium-light);
+  border-radius: var(--border-radius-sm);
+}
+
+#detected-classes-list::-webkit-scrollbar-thumb:hover {
+  background: var(--medium);
+}
+
+/* Estados de carga */
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mensajes de error */
+.fa-exclamation-triangle {
+  color: var(--danger);
+}
+
+/* Mensajes de éxito */
+.fa-check-circle {
+  color: var(--success);
+}
