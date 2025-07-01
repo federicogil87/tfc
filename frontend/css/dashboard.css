@@ -403,7 +403,12 @@
 
 .data-table-container {
   margin-top: var(--spacing-md);
+  max-height: 300px;
   overflow-x: auto;
+  overflow-y: auto;
+  margin-bottom: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--light-border);
 }
 
 .data-table {
@@ -414,14 +419,12 @@
 .data-table th {
   background-color: var(--primary-color);
   color: var(--white);
-  font-weight: 500;
-  padding: var(--spacing-sm);
-  text-align: left;
-}
+  font-weight: 600;
+  position: sticky;
 
-.data-table td {
-  padding: var(--spacing-sm);
-  border-bottom: 1px solid var(--medium-light);
+  text-align: left;
+  top: 0;
+  z-index: 1;
 }
 
 .data-table tr:nth-child(even) {
@@ -430,6 +433,21 @@
 
 .data-table tr:hover {
   background-color: rgba(30, 136, 229, 0.05);
+}
+
+.data-table th,
+.data-table td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--light-border);
+  text-align: left;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:nth-child(even) {
+  background-color: rgba(var(--light-rgb), 0.5);
 }
 
 /* Columnas flexibles para formularios */
@@ -537,10 +555,12 @@
   align-items: center;
   gap: var(--spacing-xs);
   margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .form-check input[type="checkbox"] {
-  width: 18px;
+  width: auto;
+  margin-right: var(--spacing-sm);
   height: 18px;
   cursor: pointer;
 }
@@ -549,6 +569,7 @@
   cursor: pointer;
   user-select: none;
   font-weight: 500;
+  margin-bottom: 0;
 }
 
 /* Contenedor de campos personalizados */
@@ -1021,9 +1042,9 @@
   margin-left: var(--spacing-xs);
 }
 
-/* Mejorar la visualización de las tarjetas de modelo */
 .model-card-info {
   font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-sm);
 }
 
 .model-card-info p {
@@ -1031,6 +1052,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: var(--spacing-xs) 0;
+  font-size: var(--font-size-sm);
+  color: var(--medium-dark);
 }
 
 .model-card-info .label {
@@ -1041,6 +1065,11 @@
 
 .model-card-info p:last-child {
   margin-bottom: 0;
+}
+
+.model-card-info .label {
+  font-weight: 500;
+  color: var(--dark);
 }
 
 /* Cards para mostrar modelos */
@@ -1084,21 +1113,6 @@
   border-radius: 10rem;
   background-color: var(--primary-light);
   color: var(--white);
-}
-
-.model-card-info {
-  margin-bottom: var(--spacing-sm);
-}
-
-.model-card-info p {
-  margin: var(--spacing-xs) 0;
-  font-size: var(--font-size-sm);
-  color: var(--medium-dark);
-}
-
-.model-card-info .label {
-  font-weight: 500;
-  color: var(--dark);
 }
 
 .model-card-footer {
@@ -1379,9 +1393,7 @@
   .content-header .sidebar-toggle {
     display: block;
   }
-}
 
-@media (max-width: 992px) {
   .page-buttons-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1445,22 +1457,6 @@
   display: block;
 }
 
-/* Checkboxes */
-.form-check {
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--spacing-sm);
-}
-
-.form-check input[type="checkbox"] {
-  width: auto;
-  margin-right: var(--spacing-sm);
-}
-
-.form-check label {
-  margin-bottom: 0;
-}
-
 /* Tablas mejoradas */
 .table-responsive {
   overflow-x: auto;
@@ -1480,43 +1476,6 @@ table {
 .text-muted {
   color: var(--medium);
   font-size: var(--font-size-sm);
-}
-
-/* Estilos para tablas de datos */
-.data-table-container {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  border: 1px solid var(--light-border);
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table th,
-.data-table td {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--light-border);
-  text-align: left;
-}
-
-.data-table th {
-  background-color: var(--primary-color);
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.data-table tr:last-child td {
-  border-bottom: none;
-}
-
-.data-table tr:nth-child(even) {
-  background-color: rgba(var(--light-rgb), 0.5);
 }
 
 /* Estilos específicos para la matriz de confusión */
