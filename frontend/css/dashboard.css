@@ -450,6 +450,20 @@
   background-color: rgba(var(--light-rgb), 0.5);
 }
 
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  min-width: 100%;
+}
+
+.table-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
 /* Columnas flexibles para formularios */
 .form-row {
   display: flex;
@@ -1457,55 +1471,8 @@
   display: block;
 }
 
-/* Tablas mejoradas */
-.table-responsive {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-table {
-  min-width: 100%;
-}
-
-.table-actions {
-  display: flex;
-  gap: var(--spacing-xs);
-}
-
 /* Texto de ayuda */
 .text-muted {
   color: var(--medium);
   font-size: var(--font-size-sm);
-}
-
-/* Estilos específicos para la matriz de confusión */
-.confusion-matrix {
-  margin-top: var(--spacing-md);
-}
-
-.confusion-matrix table {
-  border-collapse: collapse;
-  margin: var(--spacing-sm) auto;
-}
-
-.confusion-matrix th,
-.confusion-matrix td {
-  padding: var(--spacing-sm);
-  text-align: center;
-  border: 1px solid var(--medium-light);
-}
-
-.confusion-matrix th {
-  background-color: var(--primary-color);
-  color: var(--white);
-  font-weight: 500;
-}
-
-.confusion-matrix td.diagonal {
-  background-color: rgba(67, 160, 71, 0.2);
-  font-weight: 500;
-}
-
-.confusion-matrix td.highlight {
-  background-color: rgba(229, 57, 53, 0.1);
 }
