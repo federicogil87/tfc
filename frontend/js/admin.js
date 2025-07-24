@@ -348,7 +348,9 @@ function confirmDeleteUser(userId) {
 async function deleteUser(userId) {
   try {
     // Llamar a API para eliminar usuario
-    await deleteUser(userId);
+    await apiRequest(`/auth/users/${userId}`, {
+      method: "DELETE",
+    });
 
     // Mostrar mensaje de éxito
     showAlert(

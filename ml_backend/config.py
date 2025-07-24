@@ -33,7 +33,7 @@ class Config:
     TABULAR_MODELS_FOLDER = os.path.join(MODELS_FOLDER, 'tabular')
     
     # Configuración de archivos
-    MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50 MB límite para subidas
+    MAX_CONTENT_LENGTH = 500 * 1024 * 1024  # 500 MB límite para subidas
     ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg'}
     ALLOWED_TABULAR_EXTENSIONS = {'csv', 'xlsx', 'xls'}
     

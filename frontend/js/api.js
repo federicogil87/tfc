@@ -41,21 +41,54 @@ async function apiRequest(endpoint, options = {}) {
       statusText: response.statusText,
     });
 
-    // Si la respuesta es 401 (Unauthorized), intentar renovar el token
-    if (response.status === 401) {
-      const refreshed = await refreshToken();
-      if (refreshed) {
-        // Intentar de nuevo con el nuevo token
-        fetchOptions.headers.Authorization = `Bearer ${localStorage.getItem(
-          "accessToken"
-        )}`;
-        console.log("Token renovado, reintentando petición");
-        return await fetch(url, fetchOptions).then(res => res.json());
-      } else {
-        // Si no se pudo renovar, redirigir al login
-        console.log("No se pudo renovar el token, redirigiendo al login");
-        redirectToLogin();
-        throw new Error("Sesión expirada");
+    if (!response.ok) {
+      let errorMessage = `Error HTTP: ${response.status}`;
+
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.msg || errorData.error || errorMessage;
+      } catch (e) {
+        // Si no se puede parsear como JSON, usar mensaje por defecto
+        console.error("Error al parsear respuesta de error:", e);
+      }
+
+      if (response.status === 401 || response.status === 403) {
+        const errorData = await response.json();
+
+        // Si el mensaje indica cuenta desactivada, cerrar sesión
+        if (errorData.msg && errorData.msg.includes("desactivada")) {
+          logout();
+          window.location.href = "/index.html";
+          throw new Error(
+            "Tu cuenta ha sido desactivada. Contacta al administrador."
+          );
+        }
+
+        // Si es un error de token, intentar refresh
+        if (errorData.msg && errorData.msg.includes("token")) {
+          const refreshed = await refreshToken();
+          if (refreshed) {
+            // Reintentar la petición original con el nuevo token
+            const newToken = getAuthToken();
+            requestOptions.headers["Authorization"] = `Bearer ${newToken}`;
+            const retryResponse = await fetch(
+              `${API_BASE_URL}${url}`,
+              requestOptions
+            );
+
+            if (!retryResponse.ok) {
+              throw new Error(`Error HTTP: ${retryResponse.status}`);
+            }
+
+            return await retryResponse.json();
+          } else {
+            logout();
+            window.location.href = "/index.html";
+            throw new Error(
+              "Sesión expirada. Por favor, inicia sesión nuevamente."
+            );
+          }
+        }
       }
     }
 
@@ -101,27 +134,34 @@ function redirectToLogin() {
  * @returns {Promise<boolean>} - true si se renovó correctamente, false en caso contrario
  */
 async function refreshToken() {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) {
-    return false;
-  }
-
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
       return false;
     }
 
-    const data = await response.json();
-    localStorage.setItem("accessToken", data.access_token);
-    return true;
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${refreshToken}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("authToken", data.access_token);
+      return true;
+    } else {
+      // ✅ CORRECCIÓN: Verificar si el usuario fue desactivado
+      const errorData = await response.json();
+      if (errorData.msg && errorData.msg.includes("inactivo")) {
+        logout();
+        alert("Tu cuenta ha sido desactivada. Contacta al administrador.");
+        window.location.href = "/index.html";
+      }
+      return false;
+    }
   } catch (error) {
     console.error("Error al renovar token:", error);
     return false;
