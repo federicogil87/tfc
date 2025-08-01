@@ -12,6 +12,7 @@ class Config:
     # Configuración general
     SECRET_KEY = os.environ.get('SECRET_KEY', 'mi_clave_secreta_por_defecto_cambiar_en_produccion')
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+    PORT = os.environ.get('PORT', 5000)
     
     # Configuración de la base de datos
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI', 'sqlite:///ml_backend.db')
@@ -46,7 +47,6 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    # En producción, asegúrate de que estas claves estén configuradas en variables de entorno
     SECRET_KEY = os.environ.get('SECRET_KEY')
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')

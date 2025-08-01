@@ -97,8 +97,8 @@ if __name__ == '__main__':
     # Crear y ejecutar la aplicación
     app = create_app()
     
-    # Obtener el puerto del entorno o usar 5000 por defecto
-    port = int(os.environ.get('PORT', 5000))
+    # Obtener el puerto del entorno
+    port = app.config['PORT']
     
     # Ejecutar la aplicación
     app.run(host='0.0.0.0', port=port)
